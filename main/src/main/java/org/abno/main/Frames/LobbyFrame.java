@@ -13,7 +13,7 @@ import java.util.Set;
 public class LobbyFrame extends JFrame {
     // Constants
     private static final String FRAME_TITLE = "Lobby";
-    private static final Dimension SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();
+    private static final Dimension SCREEN_SIZE = new Dimension(1366, 768); // Manually setting the fixed dimension 1366x768
     private static final Color BACKGROUND_COLOR = new Color(45, 21, 92); // Lobby background color
     private static final Color BORDER_COLOR = Color.WHITE; // Border color
     private static final Color INPUT_BOX_BG_COLOR = new Color(192, 192, 192, 128); // Input box background color
@@ -24,7 +24,8 @@ public class LobbyFrame extends JFrame {
     private static final int GRID_COLUMNS = 5;
     private static final int CELL_SIZE = 133; // 2/3 larger than 100
     private static final Dimension CONTAINER_SIZE = new Dimension(GRID_COLUMNS * CELL_SIZE, GRID_ROWS * CELL_SIZE);
-
+    private String selectedToken;
+    private String selectedId;
     private ImagePanel imagePanel;
 
     public LobbyFrame() {
@@ -36,7 +37,7 @@ public class LobbyFrame extends JFrame {
 
         // Add the side panel (with existing components)
         JPanel sidePanel = createSidePanel();
-        sidePanel.setBounds(0, 0, SCREEN_SIZE.width / 4, 4 * SCREEN_SIZE.height / 5);
+        sidePanel.setBounds(0, 0, SCREEN_SIZE.width / 3, SCREEN_SIZE.height);
 
         // Create and position the new container
         JPanel newContainer = createNewContainer();
@@ -54,8 +55,7 @@ public class LobbyFrame extends JFrame {
     private void configureFrame() {
         setTitle(FRAME_TITLE);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setSize(new Dimension(SCREEN_SIZE.width * 2/3, SCREEN_SIZE.height * 2 / 3)); // 2/3 of half the size
+        setSize(SCREEN_SIZE); // Use the fixed size of 1366x768
         setLayout(new BorderLayout());
         getContentPane().setBackground(BACKGROUND_COLOR); // Set background color of the frame
     }
@@ -148,10 +148,12 @@ public class LobbyFrame extends JFrame {
         cell.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                System.out.println("Clicked token: " + token.getName());
+                selectedToken = token.getName(); // Save the clicked token to the selectedToken variable
+                System.out.println("Selected token: " + selectedToken); // Print the selected token
                 imagePanel.setImage(token.getImg()); // Update the image panel
             }
         });
+
 
         return cell;
     }
@@ -202,14 +204,48 @@ public class LobbyFrame extends JFrame {
     }
 
     private JPanel createInputContainer() {
-        JTextField textField = new JTextField(27); // 2/3 larger than 20
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(textField, BorderLayout.CENTER);
-        panel.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 2, true)); // 2/3 of 1 border size
-        panel.setBackground(INPUT_BOX_BG_COLOR);
-        panel.setMaximumSize(new Dimension(267, textField.getPreferredSize().height)); // 2/3 of 200
+        // Text Input
+        JTextField textField = new JTextField(27);
+        JPanel inputPanel = new JPanel(new BorderLayout());
+        inputPanel.add(textField, BorderLayout.CENTER);
+        inputPanel.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 2, true));
+        inputPanel.setBackground(INPUT_BOX_BG_COLOR);
+        inputPanel.setMaximumSize(new Dimension(267, textField.getPreferredSize().height));
 
-        return panel;
+        // Start Button
+        JButton startButton = getJButton(textField);
+
+        JPanel container = new JPanel();
+        container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
+        container.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+        container.add(inputPanel);
+        container.add(Box.createRigidArea(new Dimension(0, 10))); // Spacer
+        container.add(startButton);
+
+        return container;
+    }
+
+    private JButton getJButton(JTextField textField) {
+        JButton startButton = new JButton("Start");
+        startButton.setAlignmentX(JComponent.CENTER_ALIGNMENT); // Center button
+        startButton.addActionListener(e -> {
+            if (selectedToken != null) {
+                startButton.setBackground(Color.GREEN);
+                startButton.setEnabled(false);
+                selectedId = textField.getText();
+                System.out.println("Selected ID: " + selectedId);
+                System.out.println("Selected Token: " + selectedToken);
+
+                // Switching to PregameFrame
+                SwingUtilities.invokeLater(() -> {
+                    new PregameFrame();
+                    LobbyFrame.this.dispose(); // Dispose the current frame
+                });
+            } else {
+                System.out.println("No token selected.");
+            }
+        });
+        return startButton;
     }
 
     private ImagePanel createImagePanel(Dimension size) {

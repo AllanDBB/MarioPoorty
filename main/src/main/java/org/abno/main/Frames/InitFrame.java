@@ -8,7 +8,7 @@ public class InitFrame extends JFrame {
 
     // Constants
     private static final String FRAME_TITLE = "MarioPoorty";
-    private static final Dimension FRAME_SIZE = Toolkit.getDefaultToolkit().getScreenSize();
+    static final Dimension FRAME_SIZE = new Dimension(1366, 768);
     private static final Color BUTTON_COLOR = Color.WHITE; // Button text color
     private static final Color BUTTON_HOVER_TEXT_COLOR = Color.LIGHT_GRAY; // Button hover text color
     private static final Font BUTTON_FONT = new Font("Monospaced", Font.BOLD, 36); // Button font
@@ -25,7 +25,6 @@ public class InitFrame extends JFrame {
     private void configureFrame() {
         setTitle(FRAME_TITLE);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setUndecorated(true);
         setSize(FRAME_SIZE);
         setLayout(new BorderLayout());
