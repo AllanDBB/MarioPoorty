@@ -49,7 +49,6 @@ public class Server {
         }
     }
 
-
     private static class ClientHandler extends Thread {
         private Socket socket;
         private PrintWriter out;

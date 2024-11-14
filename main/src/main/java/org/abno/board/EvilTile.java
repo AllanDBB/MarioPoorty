@@ -7,7 +7,5 @@ public class EvilTile extends Tile{
         super(id, imgRoute);
     }
     @Override
-    public void interact() {
-
-    }
+    public void interact() {}
 }

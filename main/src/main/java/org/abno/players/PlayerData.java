@@ -8,6 +8,10 @@ public class PlayerData {
     Token token;
     boolean ready;
 
+    // Flags:
+    int lostTurns;
+
+
     public PlayerData(PrintWriter writer, Token token) {
         this.writer = writer;
         this.token = token;

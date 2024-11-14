@@ -6,6 +6,7 @@ public class SpecialTile extends Tile{
     public SpecialTile(int id, String imgRoute){
         super(id, imgRoute);
     }
+
     @Override
     public void interact() {
 
