@@ -36,7 +36,7 @@ public class LobbyFrame extends JFrame {
 
         // Add the side panel (with existing components)
         JPanel sidePanel = createSidePanel();
-        sidePanel.setBounds(0, 0, SCREEN_SIZE.width / 4, SCREEN_SIZE.height / 2); // 2/3 of half the size
+        sidePanel.setBounds(0, 0, SCREEN_SIZE.width / 4, 4 * SCREEN_SIZE.height / 5);
 
         // Create and position the new container
         JPanel newContainer = createNewContainer();
@@ -44,8 +44,8 @@ public class LobbyFrame extends JFrame {
         newContainer.setBounds(newContainerBounds);
 
         // Add sidePanel and newContainer appropriately
-        mainPanel.add(sidePanel, BorderLayout.WEST);
-        mainPanel.add(newContainer, BorderLayout.CENTER);
+        mainPanel.add(sidePanel);
+        mainPanel.add(newContainer);
 
         add(mainPanel);
         setVisible(true);
@@ -55,7 +55,7 @@ public class LobbyFrame extends JFrame {
         setTitle(FRAME_TITLE);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setSize(new Dimension((int)(SCREEN_SIZE.width * 2 / 3), (int)(SCREEN_SIZE.height * 2 / 3))); // 2/3 of half the size
+        setSize(new Dimension(SCREEN_SIZE.width * 2/3, SCREEN_SIZE.height * 2 / 3)); // 2/3 of half the size
         setLayout(new BorderLayout());
         getContentPane().setBackground(BACKGROUND_COLOR); // Set background color of the frame
     }
@@ -89,7 +89,7 @@ public class LobbyFrame extends JFrame {
 
         // Add both containers to the horizontal container
         horizontalContainer.add(leftSide);
-        horizontalContainer.add(Box.createRigidArea(new Dimension(67, 0))); // 2/3 of 50 padding
+        horizontalContainer.add(Box.createRigidArea(new Dimension(134, 0))); // Increased padding to 134
         horizontalContainer.add(newContainer);
 
         panel.add(horizontalContainer);
@@ -157,7 +157,7 @@ public class LobbyFrame extends JFrame {
     }
 
     private Rectangle calculateNewContainerBounds() {
-        int rightX = SCREEN_SIZE.width / 4; // 2/3 of half the width / 3
+        int rightX = SCREEN_SIZE.width - 100 - CONTAINER_SIZE.width; // Position relative to the right side
         int topY = SCREEN_SIZE.height / 9;  // 2/3 of height / 6
         return new Rectangle(rightX, topY, CONTAINER_SIZE.width, CONTAINER_SIZE.height);
     }
