@@ -22,7 +22,7 @@ public class LobbyFrame extends JFrame {
 
     private static final int GRID_ROWS = 2;
     private static final int GRID_COLUMNS = 5;
-    private static final int CELL_SIZE = 200;
+    private static final int CELL_SIZE = 133; // 2/3 larger than 100
     private static final Dimension CONTAINER_SIZE = new Dimension(GRID_COLUMNS * CELL_SIZE, GRID_ROWS * CELL_SIZE);
 
     private ImagePanel imagePanel;
@@ -36,7 +36,7 @@ public class LobbyFrame extends JFrame {
 
         // Add the side panel (with existing components)
         JPanel sidePanel = createSidePanel();
-        sidePanel.setBounds(0, 0, SCREEN_SIZE.width / 3, SCREEN_SIZE.height);
+        sidePanel.setBounds(0, 0, SCREEN_SIZE.width / 4, SCREEN_SIZE.height / 2); // 2/3 of half the size
 
         // Create and position the new container
         JPanel newContainer = createNewContainer();
@@ -55,7 +55,7 @@ public class LobbyFrame extends JFrame {
         setTitle(FRAME_TITLE);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setSize(new Dimension((int)(SCREEN_SIZE.width), (int)(SCREEN_SIZE.height)));
+        setSize(new Dimension((int)(SCREEN_SIZE.width * 2 / 3), (int)(SCREEN_SIZE.height * 2 / 3))); // 2/3 of half the size
         setLayout(new BorderLayout());
         getContentPane().setBackground(BACKGROUND_COLOR); // Set background color of the frame
     }
@@ -78,7 +78,7 @@ public class LobbyFrame extends JFrame {
         leftSide.add(leftContainer);
 
         // Add some spacing between the container and the text input box
-        leftSide.add(Box.createRigidArea(new Dimension(0, 40)));
+        leftSide.add(Box.createRigidArea(new Dimension(0, 27))); // 2/3 of 20 spacing
 
         // Text Input Box
         JPanel inputContainer = createInputContainer();
@@ -89,7 +89,7 @@ public class LobbyFrame extends JFrame {
 
         // Add both containers to the horizontal container
         horizontalContainer.add(leftSide);
-        horizontalContainer.add(Box.createRigidArea(new Dimension(100, 0)));
+        horizontalContainer.add(Box.createRigidArea(new Dimension(67, 0))); // 2/3 of 50 padding
         horizontalContainer.add(newContainer);
 
         panel.add(horizontalContainer);
@@ -98,9 +98,9 @@ public class LobbyFrame extends JFrame {
 
     private JPanel createNewContainer() {
         JPanel panel = new JPanel();
-        panel.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 6, true));
+        panel.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 4, true)); // 2/3 larger than 3
         panel.setBackground(Color.WHITE);
-        panel.setLayout(new GridLayout(GRID_ROWS, GRID_COLUMNS, 20, 20)); // Doubling the gaps as well
+        panel.setLayout(new GridLayout(GRID_ROWS, GRID_COLUMNS, 13, 13)); // 2/3 larger than 10 gaps
 
         // Fetch tokens from server
         Set<Token> tokensSet = Server.getAvailableTokens();
@@ -129,7 +129,7 @@ public class LobbyFrame extends JFrame {
     private JPanel createImageCell(Token token) {
         JPanel cell = new JPanel();
         cell.setLayout(new BorderLayout());
-        cell.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 2, true));
+        cell.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 2, true)); // 2/3 larger than 1
 
         // Load and set the image
         String imagePath = Paths.get(ASSETS_BASE_PATH, token.getImg()).toString();
@@ -157,8 +157,8 @@ public class LobbyFrame extends JFrame {
     }
 
     private Rectangle calculateNewContainerBounds() {
-        int rightX = SCREEN_SIZE.width / 3;
-        int topY = SCREEN_SIZE.height / 6;
+        int rightX = SCREEN_SIZE.width / 4; // 2/3 of half the width / 3
+        int topY = SCREEN_SIZE.height / 9;  // 2/3 of height / 6
         return new Rectangle(rightX, topY, CONTAINER_SIZE.width, CONTAINER_SIZE.height);
     }
 
@@ -167,22 +167,22 @@ public class LobbyFrame extends JFrame {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
         // Calculate the left padding to position the container and input box at 1/12 of the screen width
-        int leftPadding = SCREEN_SIZE.width / 20;
+        int leftPadding = SCREEN_SIZE.width / 30; // 2/3 of 40 padding
 
         // Calculate the top padding to position the container 1/6 from the top of the screen
-        int topPadding = SCREEN_SIZE.height / 6;
+        int topPadding = SCREEN_SIZE.height / 9; // 2/3 of height / 12 padding
 
         // Set the border with the calculated padding
-        panel.setBorder(BorderFactory.createEmptyBorder(topPadding, leftPadding, 100, 100));
+        panel.setBorder(BorderFactory.createEmptyBorder(topPadding, leftPadding, 67, 67)); // 2/3 padding
         panel.setBackground(BACKGROUND_COLOR);
         return panel;
     }
 
     private JPanel createRoundedBorderPanel() {
         JPanel panel = new JPanel();
-        panel.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 6, true));
+        panel.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 4, true)); // 2/3 of 3 border size
 
-        Dimension containerSize = new Dimension(400, 400);
+        Dimension containerSize = new Dimension(267, 267); // 2/3 of 200 x 200
 
         // Setting the dimensions to control the container height
         panel.setPreferredSize(containerSize);
@@ -202,12 +202,13 @@ public class LobbyFrame extends JFrame {
     }
 
     private JPanel createInputContainer() {
-        JTextField textField = new JTextField(40);
+        JTextField textField = new JTextField(27); // 2/3 larger than 20
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(textField, BorderLayout.CENTER);
-        panel.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 2, true));
-        panel.setBackground(INPUT_BOX_BG_COLOR); // Transparent background
-        panel.setMaximumSize(new Dimension(400, textField.getPreferredSize().height));
+        panel.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 2, true)); // 2/3 of 1 border size
+        panel.setBackground(INPUT_BOX_BG_COLOR);
+        panel.setMaximumSize(new Dimension(267, textField.getPreferredSize().height)); // 2/3 of 200
+
         return panel;
     }
 
