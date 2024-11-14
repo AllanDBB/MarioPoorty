@@ -1,9 +1,5 @@
 package org.abno.server;
 
-import org.abno.main.Frames.InitFrame;
-import org.abno.main.Main;
-
-import javax.swing.*;
 import java.io.*;
 import java.net.*;
 
@@ -13,9 +9,9 @@ public class Client {
     private static final int SERVER_PORT = 12345;
 
 
-    private static void init() {
-        new InitFrame();
-    }
+    //private static void init() {
+    //    new InitFrame();
+    //}
 
     public static void main(String[] args) {
         try (Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
@@ -25,7 +21,7 @@ public class Client {
 
             System.out.println("Connected.");
 
-            init();
+            //init();
 
             new Thread(() -> {
                 try {

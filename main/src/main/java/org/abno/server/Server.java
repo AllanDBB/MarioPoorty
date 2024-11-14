@@ -79,6 +79,7 @@ public class Server {
             e.printStackTrace();
         }
     }
+    
 
     private static synchronized void startGame() {
         if (playersQueue.size() == activePlayers && !gameStarted && playersQueue.size() > 1) {
@@ -321,7 +322,7 @@ public class Server {
 
                 Server.sendToAll(rollMessage);
 
-                if (getTokenByName(playerId).getTile().getId()+total >= 38){
+                if (clientData.get(playerId).getToken().getTile().getId() >= 38){
                     gameEnded = true;
                 } else{
                     handleMove(playerId, total);
@@ -335,13 +336,19 @@ public class Server {
         }
 
         private void handleMove(String playerId, int spaces){
-            getTokenByName(playerId).setTile(board.getTiles().get(getTokenByName(playerId).getTile().getId()+spaces));
-            PlayerData data = clientData.get(clientId);
 
+            int actualTile = clientData.get(playerId).getToken().getTile().getId();
+            clientData.get(playerId).getToken().getTile().setId(actualTile + spaces);
+
+            out.println("Step 2");
+            PlayerData data = clientData.get(clientId);
+            out.println("Step 3");
             for (Tile t : board.getTiles()){
-                if (t.getId() == getTokenByName(playerId).getTile().getId()){
+                if (t.getId() == clientData.get(playerId).getToken().getTile().getId()){
+                    out.println("Entraste a una casilla WUJUU! " + t.getClass());
                     t.interact(data);
                 }
+                out.println(t.getClass());
             }
         }
 
