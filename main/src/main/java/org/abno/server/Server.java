@@ -10,6 +10,9 @@ import org.abno.players.PlayerData;
 import org.abno.players.Token;
 import org.abno.players.Dices;
 import org.abno.players.randomNumber;
+import org.abno.board.Board;
+
+import org.abno.games.TicTacToe;
 
 public class Server {
 
@@ -55,6 +58,7 @@ public class Server {
     private static boolean gameStarted = false;
     private static List<String> playersQueue = new ArrayList<>();
     private static int currentPlayerIndex = 0;
+    private static Board board = new Board();
 
     public static void main(String[] args) {
         System.out.println("Server starting...");
@@ -139,8 +143,7 @@ public class Server {
             }
         }
     }
-
-
+    
     private static synchronized void sendToAll(String message) {
         for (PlayerData data : clientData.values()) {
             data.getWriter().println(message);
@@ -191,6 +194,8 @@ public class Server {
                             iterator = availableTokens.iterator();
                         }
                     } while (selectedToken == null);
+
+                    selectedToken.setTile(board.getTiles().getFirst());
 
                     clientData.put(clientId, new PlayerData(out, in, selectedToken));
                     activePlayers++;
@@ -291,10 +296,14 @@ public class Server {
             }
         }
 
+        private void handleMove(String playerId){}
+
         private void endTurn() {
             // Cambiar al siguiente turno
             Server.currentPlayerIndex = (Server.currentPlayerIndex + 1) % Server.playersQueue.size();
             Server.sendToAll("Turn has ended. Next player's turn.");
         }
+
     }
+
 }
