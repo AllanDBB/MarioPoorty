@@ -100,19 +100,17 @@ public class InitFrame extends JFrame {
         startButton.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                System.out.println("Mouse entered"); // Debug statement
                 startButton.setForeground(BUTTON_HOVER_TEXT_COLOR); // Change text color to gray
             }
 
             @Override
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                System.out.println("Mouse exited"); // Debug statement
                 startButton.setForeground(BUTTON_COLOR); // Revert text color to white
             }
         });
 
         startButton.addActionListener(e -> {
-            new GameFrame();
+            new LobbyFrame();
             InitFrame.this.setVisible(false);
             dispose();
         });
