@@ -30,7 +30,7 @@ public class Server {
     ));
 
     // Game
-    private boolean gameStarted = false;
+    private static boolean gameStarted = false;
     private static List<String> playersQueue = new ArrayList<>();
     private static int currentPlayerIndex = 0;
 
@@ -42,8 +42,6 @@ public class Server {
                 new ClientHandler(serverSocket.accept()).start();
             }
 
-            startGame();
-
             System.out.println("Server started on port " + PORT);
 
         } catch (IOException e) {
@@ -51,12 +49,6 @@ public class Server {
         }
     }
 
-    private static void startGame(){
-        while (activePlayers > 0) {
-            String currentPlayer = playersQueue.get(currentPlayerIndex);
-            currentPlayerIndex = (currentPlayerIndex + 1) % playersQueue.size();
-        }
-    }
 
     private static class ClientHandler extends Thread {
         private Socket socket;
@@ -89,7 +81,6 @@ public class Server {
                         out.println("Please select a token:");
                         while (iterator.hasNext()) {
                             Token token = iterator.next();
-                            out.println(token.getName());
                             if (token.getName().equals(ficha)) {
                                 selectedToken = token;
                                 iterator.remove();
@@ -167,8 +158,6 @@ public class Server {
             }
         }
 
-        private void awaitTurnAction(String playerAwait){}
-
         private void sendToClient(String clientId, String message) {
             PlayerData recipientData = clientData.get(clientId);
             if (recipientData != null) {
@@ -185,8 +174,6 @@ public class Server {
                 }
             }
         }
-
-
     }
 
     public Set<Token> getAvailableTokens() {

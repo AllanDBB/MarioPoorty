@@ -1,6 +1,6 @@
 package org.abno.board;
 
-public abstract class Tile {
+public class Tile {
     private int id;
     private String img;
 
@@ -17,6 +17,6 @@ public abstract class Tile {
         return img;
     }
 
-    public abstract void interact();
+    public void interact(){}
 
 }
