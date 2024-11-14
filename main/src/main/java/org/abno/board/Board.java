@@ -17,6 +17,7 @@ public class Board {
         this.tiles = new ArrayList<Tile>();
         this.maxTiles = 38;  // Al menos 38 casillas en el tablero
         this.random = new Random();
+        fillBoard();
     }
 
     public void fillBoard() {

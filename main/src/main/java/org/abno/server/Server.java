@@ -6,6 +6,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.abno.board.EvilTiles.FireFlower;
+import org.abno.board.EvilTiles.Jail;
+import org.abno.board.Tile;
 import org.abno.players.PlayerData;
 import org.abno.players.Token;
 import org.abno.players.Dices;
@@ -59,6 +62,8 @@ public class Server {
     private static List<String> playersQueue = new ArrayList<>();
     private static int currentPlayerIndex = 0;
     private static Board board = new Board();
+    private static boolean gameEnded = false;
+
 
     public static void main(String[] args) {
         System.out.println("Server starting...");
@@ -129,7 +134,7 @@ public class Server {
     }
 
     private static void gameLoop() {
-        while (gameStarted) {
+        while (gameStarted && !gameEnded) {
             String currentPlayer = playersQueue.get(currentPlayerIndex);
             sendToAll("It's " + currentPlayer + "'s turn.");
 
@@ -156,6 +161,7 @@ public class Server {
         private BufferedReader in;
         private String clientId;
 
+
         public ClientHandler(Socket socket) {
             this.socket = socket;
         }
@@ -178,7 +184,7 @@ public class Server {
                     Iterator<Token> iterator = availableTokens.iterator();
 
                     do {
-                        out.println("Please select a token:");
+
                         while (iterator.hasNext()) {
                             Token token = iterator.next();
                             if (token.getName().equals(ficha)) {
@@ -195,7 +201,7 @@ public class Server {
                         }
                     } while (selectedToken == null);
 
-                    selectedToken.setTile(board.getTiles().getFirst());
+                    selectedToken.setTile(board.getTiles().get(0));
 
                     clientData.put(clientId, new PlayerData(out, in, selectedToken));
                     activePlayers++;
@@ -281,6 +287,28 @@ public class Server {
 
         private void handleRoll(String playerId){
             if (Server.playersQueue.get(Server.currentPlayerIndex).equals(playerId)){
+                PlayerData data = clientData.get(clientId);
+                if (data.getLostTurns() > 0){
+                    data.setLostTurns(data.getLostTurns()-1);
+                    return;
+                }
+                if (data.isRestart()){
+                    getTokenByName(playerId).setTile(board.getTiles().get(0));
+                    return;
+                }
+                if (data.getOffset()>0){
+                    if (getTokenByName(playerId).getTile().getId()+data.getOffset()>=38){
+                        gameEnded = true;
+                    } else if (getTokenByName(playerId).getTile().getId()+data.getOffset()<=0){
+                        getTokenByName(playerId).setTile(board.getTiles().get(0));
+                    }
+                    else{
+                        handleMove(playerId, data.getOffset());
+                        data.setOffset(0);
+                    }
+                }
+
+
                 Dices dices = new Dices();
                 dices.roll();
 
@@ -292,11 +320,30 @@ public class Server {
                         + dice1 + " and " + dice2 + " (Total: " + total + ")";
 
                 Server.sendToAll(rollMessage);
+
+                if (getTokenByName(playerId).getTile().getId()+total >= 38){
+                    gameEnded = true;
+                } else{
+                    handleMove(playerId, total);
+
+                    if (data.isRollDiceAgain()){
+                        handleRoll(playerId);
+                    }
+                }
                 sendToClient(playerId, "You rolled a " + total + ". Complete your turn with @EndTurn when done.");
             }
         }
 
-        private void handleMove(String playerId){}
+        private void handleMove(String playerId, int spaces){
+            getTokenByName(playerId).setTile(board.getTiles().get(getTokenByName(playerId).getTile().getId()+spaces));
+            PlayerData data = clientData.get(clientId);
+
+            for (Tile t : board.getTiles()){
+                if (t.getId() == getTokenByName(playerId).getTile().getId()){
+                    t.interact(data);
+                }
+            }
+        }
 
         private void endTurn() {
             // Cambiar al siguiente turno
