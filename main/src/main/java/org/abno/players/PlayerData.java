@@ -16,7 +16,7 @@ public class PlayerData {
     int offset;
     boolean restart;
 
-    public PlayerData(PrintWriter writer, Token token) {
+    public PlayerData(PrintWriter writer, BufferedReader reader,Token token) {
         this.writer = writer;
         this.reader = reader;
         this.token = token;
