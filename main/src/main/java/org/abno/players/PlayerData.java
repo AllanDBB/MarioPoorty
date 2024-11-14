@@ -1,12 +1,14 @@
 package org.abno.players;
 
+import java.io.BufferedReader;
 import java.io.PrintWriter;
 
 public class PlayerData {
 
-    PrintWriter writer;
-    Token token;
-    boolean ready;
+    private PrintWriter writer;
+    private BufferedReader reader;  // Añadido BufferedReader para lectura
+    private Token token;
+    private boolean ready;
 
     // Flags:
     int lostTurns;
@@ -16,6 +18,7 @@ public class PlayerData {
 
     public PlayerData(PrintWriter writer, Token token) {
         this.writer = writer;
+        this.reader = reader;
         this.token = token;
     }
 
@@ -23,11 +26,15 @@ public class PlayerData {
         return writer;
     }
 
+    public BufferedReader getReader() {
+        return reader;
+    }
+
     public Token getToken() {
         return token;
     }
 
-    public void setReady(){
+    public void setReady() {
         ready = true;
     }
 
@@ -62,4 +69,8 @@ public class PlayerData {
     public void setRestart(boolean restart) {
         this.restart = restart;
     }
+    public boolean isReady() {
+        return ready;
+    }
+
 }
