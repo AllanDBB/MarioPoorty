@@ -10,7 +10,9 @@ public class PlayerData {
 
     // Flags:
     int lostTurns;
-
+    boolean rollDiceAgain = false;
+    int offset;
+    boolean restart;
 
     public PlayerData(PrintWriter writer, Token token) {
         this.writer = writer;
@@ -29,4 +31,35 @@ public class PlayerData {
         ready = true;
     }
 
+    public int getLostTurns() {
+        return lostTurns;
+    }
+
+    public void setLostTurns(int lostTurns) {
+        this.lostTurns = lostTurns;
+    }
+
+    public boolean isRollDiceAgain() {
+        return rollDiceAgain;
+    }
+
+    public void setRollDiceAgain(boolean rollDiceAgain) {
+        this.rollDiceAgain = rollDiceAgain;
+    }
+
+    public int getOffset() {
+        return offset;
+    }
+
+    public void setOffset(int offset) {
+        this.offset = offset;
+    }
+
+    public boolean isRestart() {
+        return restart;
+    }
+
+    public void setRestart(boolean restart) {
+        this.restart = restart;
+    }
 }

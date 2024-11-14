@@ -6,6 +6,5 @@ public class EvilTile extends Tile{
     public EvilTile(int id, String imgRoute){
         super(id, imgRoute);
     }
-    @Override
-    public void interact() {}
+
 }

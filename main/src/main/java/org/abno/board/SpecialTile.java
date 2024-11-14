@@ -7,8 +7,5 @@ public class SpecialTile extends Tile{
         super(id, imgRoute);
     }
 
-    @Override
-    public void interact() {
 
-    }
 }
