@@ -1,9 +1,14 @@
 package org.abno.main.Frames;
 
+import org.abno.players.Token;
+import org.abno.server.Server;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.nio.file.Paths;
+import java.util.Set;
 
 public class LobbyFrame extends JFrame {
     // Constants
@@ -13,8 +18,18 @@ public class LobbyFrame extends JFrame {
     private static final Color BORDER_COLOR = Color.WHITE; // Border color
     private static final Color INPUT_BOX_BG_COLOR = new Color(192, 192, 192, 128); // Input box background color
 
+    private static final String ASSETS_BASE_PATH = "main/Assets"; // Base path for assets
+
+    private static final int GRID_ROWS = 2;
+    private static final int GRID_COLUMNS = 5;
+    private static final int CELL_SIZE = 200;
+    private static final Dimension CONTAINER_SIZE = new Dimension(GRID_COLUMNS * CELL_SIZE, GRID_ROWS * CELL_SIZE);
+
+    private ImagePanel imagePanel;
+
     public LobbyFrame() {
         configureFrame();
+
         // Create a main panel with absolute positioning
         JPanel mainPanel = new JPanel(null);
         mainPanel.setBackground(BACKGROUND_COLOR);
@@ -25,12 +40,12 @@ public class LobbyFrame extends JFrame {
 
         // Create and position the new container
         JPanel newContainer = createNewContainer();
-        int rightX = SCREEN_SIZE.width / 2;
-        int topY = SCREEN_SIZE.height / 6;
-        newContainer.setBounds(rightX, topY, 2 * SCREEN_SIZE.width / 5, SCREEN_SIZE.height / 3);
+        Rectangle newContainerBounds = calculateNewContainerBounds();
+        newContainer.setBounds(newContainerBounds);
 
-        mainPanel.add(sidePanel);
-        mainPanel.add(newContainer);
+        // Add sidePanel and newContainer appropriately
+        mainPanel.add(sidePanel, BorderLayout.WEST);
+        mainPanel.add(newContainer, BorderLayout.CENTER);
 
         add(mainPanel);
         setVisible(true);
@@ -40,7 +55,7 @@ public class LobbyFrame extends JFrame {
         setTitle(FRAME_TITLE);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setSize(SCREEN_SIZE);
+        setSize(new Dimension((int)(SCREEN_SIZE.width), (int)(SCREEN_SIZE.height)));
         setLayout(new BorderLayout());
         getContentPane().setBackground(BACKGROUND_COLOR); // Set background color of the frame
     }
@@ -63,7 +78,7 @@ public class LobbyFrame extends JFrame {
         leftSide.add(leftContainer);
 
         // Add some spacing between the container and the text input box
-        leftSide.add(Box.createRigidArea(new Dimension(0, 20)));
+        leftSide.add(Box.createRigidArea(new Dimension(0, 40)));
 
         // Text Input Box
         JPanel inputContainer = createInputContainer();
@@ -74,7 +89,7 @@ public class LobbyFrame extends JFrame {
 
         // Add both containers to the horizontal container
         horizontalContainer.add(leftSide);
-        horizontalContainer.add(Box.createRigidArea(new Dimension(50, 0))); // Space between containers
+        horizontalContainer.add(Box.createRigidArea(new Dimension(100, 0)));
         horizontalContainer.add(newContainer);
 
         panel.add(horizontalContainer);
@@ -83,80 +98,91 @@ public class LobbyFrame extends JFrame {
 
     private JPanel createNewContainer() {
         JPanel panel = new JPanel();
-        panel.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 3, true));
+        panel.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 6, true));
         panel.setBackground(Color.WHITE);
-        panel.setLayout(new GridLayout(2, 5, 10, 10)); // 2 rows, 5 columns, with 10px gaps
+        panel.setLayout(new GridLayout(GRID_ROWS, GRID_COLUMNS, 20, 20)); // Doubling the gaps as well
 
-        // Define an array of 10 different colors
-        Color[] colors = {
-                new Color(255, 87, 87),   // Red
-                new Color(87, 87, 255),   // Blue
-                new Color(87, 255, 87),   // Green
-                new Color(255, 255, 87),  // Yellow
-                new Color(255, 87, 255),  // Magenta
-                new Color(87, 255, 255),  // Cyan
-                new Color(255, 165, 87),  // Orange
-                new Color(165, 87, 255),  // Purple
-                new Color(87, 255, 165),  // Mint
-                new Color(255, 87, 165)   // Pink
-        };
+        // Fetch tokens from server
+        Set<Token> tokensSet = Server.getAvailableTokens();
+        Token[] tokensArray = tokensSet.toArray(new Token[0]);
+        int totalCells = GRID_COLUMNS * GRID_ROWS;
 
-        // Create grid cells
-        int totalCells = 10; // 5 columns * 2 rows
+        // Ensure the number of tokens is enough to fill the grid
+        if (tokensArray.length < totalCells) {
+            System.out.println("Not enough tokens available to fill the grid");
+            return panel;
+        }
+
+        // Create grid cells with images
         for (int i = 0; i < totalCells; i++) {
-            JPanel cell = new JPanel();
-            cell.setBackground(colors[i % colors.length]);
-
-            // Calculate dimensions based on container size
-            int cellWidth = (2 * SCREEN_SIZE.width / 5 - 60) / 5;  // Subtracting border and gaps
-            int cellHeight = (SCREEN_SIZE.height / 3 - 40) / 2;  // Subtracting border and gaps
-
-            cell.setPreferredSize(new Dimension(cellWidth, cellHeight));
-            cell.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 1, true));
-
-            // Add mouse listener to print color on click
-            cell.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    System.out.println("Clicked color: " + cell.getBackground().toString());
-                }
-            });
-
-            // Add the cell to the container
+            JPanel cell = createImageCell(tokensArray[i]);
             panel.add(cell);
         }
 
-        Dimension containerSize = new Dimension(2 * SCREEN_SIZE.width / 5, SCREEN_SIZE.height / 3);
-        panel.setPreferredSize(containerSize);
-        panel.setMaximumSize(containerSize);
-        panel.setMinimumSize(containerSize);
+        panel.setPreferredSize(CONTAINER_SIZE);
+        panel.setMaximumSize(CONTAINER_SIZE);
+        panel.setMinimumSize(CONTAINER_SIZE);
 
         return panel;
+    }
+
+    private JPanel createImageCell(Token token) {
+        JPanel cell = new JPanel();
+        cell.setLayout(new BorderLayout());
+        cell.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 2, true));
+
+        // Load and set the image
+        String imagePath = Paths.get(ASSETS_BASE_PATH, token.getImg()).toString();
+        ImageIcon icon = new ImageIcon(imagePath);
+        JLabel iconLabel = new JLabel();
+        Image scaledImage = icon.getImage().getScaledInstance(CELL_SIZE, CELL_SIZE, Image.SCALE_SMOOTH);
+        iconLabel.setIcon(new ImageIcon(scaledImage));
+        iconLabel.setHorizontalAlignment(JLabel.CENTER);
+        iconLabel.setVerticalAlignment(JLabel.CENTER);
+        cell.setPreferredSize(new Dimension(CELL_SIZE, CELL_SIZE));
+
+        // Add the icon label to the cell
+        cell.add(iconLabel, BorderLayout.CENTER);
+
+        // Add mouse listener to print token name and update the image panel on click
+        cell.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                System.out.println("Clicked token: " + token.getName());
+                imagePanel.setImage(token.getImg()); // Update the image panel
+            }
+        });
+
+        return cell;
+    }
+
+    private Rectangle calculateNewContainerBounds() {
+        int rightX = SCREEN_SIZE.width / 3;
+        int topY = SCREEN_SIZE.height / 6;
+        return new Rectangle(rightX, topY, CONTAINER_SIZE.width, CONTAINER_SIZE.height);
     }
 
     private static JPanel getJPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-        // Calculate the left padding to position the container and input box at 1/6 of the screen width
-        int leftPadding = SCREEN_SIZE.width / 6;
+        // Calculate the left padding to position the container and input box at 1/12 of the screen width
+        int leftPadding = SCREEN_SIZE.width / 20;
 
-        // Calculate the top padding to position the container 1/12 from the top of the screen
-        int topPadding = SCREEN_SIZE.height / 12;
+        // Calculate the top padding to position the container 1/6 from the top of the screen
+        int topPadding = SCREEN_SIZE.height / 6;
 
         // Set the border with the calculated padding
-        panel.setBorder(BorderFactory.createEmptyBorder(topPadding, leftPadding, 50, 50)); // Padding around the panel
+        panel.setBorder(BorderFactory.createEmptyBorder(topPadding, leftPadding, 100, 100));
         panel.setBackground(BACKGROUND_COLOR);
         return panel;
     }
 
     private JPanel createRoundedBorderPanel() {
         JPanel panel = new JPanel();
-        panel.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 3, true)); // White rounded border
+        panel.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 6, true));
 
-        // Calculating the required container height
-        int containerHeight = SCREEN_SIZE.height / 2;
-        Dimension containerSize = new Dimension(200, containerHeight);
+        Dimension containerSize = new Dimension(400, 400);
 
         // Setting the dimensions to control the container height
         panel.setPreferredSize(containerSize);
@@ -169,39 +195,48 @@ public class LobbyFrame extends JFrame {
         panel.setOpaque(false);
 
         // Create and add the image panel to the container panel
-        JPanel imagePanel = createImagePanel(containerSize);
+        this.imagePanel = createImagePanel(containerSize); // Store reference to imagePanel
         panel.add(imagePanel, BorderLayout.CENTER);
 
         return panel;
     }
 
-    private JPanel createImagePanel(Dimension size) {
-        return new ImagePanel("main/Assets/Banner.jpg", size);
-    }
-
     private JPanel createInputContainer() {
-        JTextField textField = new JTextField(20);
+        JTextField textField = new JTextField(40);
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(textField, BorderLayout.CENTER);
-        panel.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 1, true)); // White rounded border
+        panel.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 2, true));
         panel.setBackground(INPUT_BOX_BG_COLOR); // Transparent background
-        panel.setMaximumSize(new Dimension(200, textField.getPreferredSize().height)); // Ensure the height matches the preferred height of the text field
+        panel.setMaximumSize(new Dimension(400, textField.getPreferredSize().height));
         return panel;
     }
 
+    private ImagePanel createImagePanel(Dimension size) {
+        return new ImagePanel("Banner.jpg", size);
+    }
+
     public static void main(String[] args) {
-        new LobbyFrame();
+        SwingUtilities.invokeLater(() -> {
+            LobbyFrame frame = new LobbyFrame();
+            frame.setVisible(true);
+        });
     }
 }
 
 class ImagePanel extends JPanel {
-    private final Image image;
+    private Image image;
 
     public ImagePanel(String imagePath, Dimension size) {
-        this.image = new ImageIcon(imagePath).getImage();
+        setImage(imagePath);
         this.setPreferredSize(size);
         this.setMinimumSize(size);
         this.setMaximumSize(size);
+    }
+
+    public void setImage(String imagePath) {
+        String fullImagePath = Paths.get("main/Assets", imagePath).toString();
+        this.image = new ImageIcon(fullImagePath).getImage();
+        repaint(); // Repaint the panel to update the displayed image
     }
 
     @Override

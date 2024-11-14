@@ -3,6 +3,8 @@ package org.abno.server;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.abno.players.PlayerData;
 import org.abno.players.Token;
@@ -18,18 +20,36 @@ public class Server {
     private static int activePlayers = 0;
 
     // Tokens
-    private static Set<Token> availableTokens = new HashSet<>(Arrays.asList(
-            new Token("A", "A"),
-            new Token("B", "B"),
-            new Token("C", "C"),
-            new Token("D", "D"),
-            new Token("E", "E"),
-            new Token("F", "F"),
-            new Token("G", "G"),
-            new Token("H", "H"),
-            new Token("I", "I"),
-            new Token("J", "J")
-    ));
+    private static Set<Token> availableTokens = new HashSet<>();
+
+    static {
+        Map<String, String> tokenImageMapping = Stream.of(new Object[][] {
+                { "Mario", "Mario.png" },
+                { "Luigi", "Luigi.png" },
+                { "Peach", "Peach.png" },
+                { "Rosalina", "Rosalina.png" },
+                { "Wario", "Wario.png" },
+                { "Waluigi", "Waluigi.png" },
+                { "Yoshi", "Yoshi.png" },
+                { "Donkey Kong", "DonkeyKong.png" },
+                { "Monty Mole", "MontyMole.png" },
+                { "Boo", "Boo.png" },
+        }).collect(Collectors.toMap(data -> (String) data[0], data -> (String) data[1]));
+
+        for (Map.Entry<String, String> entry : tokenImageMapping.entrySet()) {
+            availableTokens.add(new Token(entry.getKey(), entry.getValue()));
+        }
+    }
+
+    public static Token getTokenByName(String name) {
+        return availableTokens.stream().filter(token -> token.getName().equals(name)).findFirst().orElse(null);
+    }
+
+    // Method to get all available tokens
+    public static Set<Token> getAvailableTokens() {
+        return Collections.unmodifiableSet(availableTokens);
+    }
+
 
     // Game
     private static boolean gameStarted = false;
