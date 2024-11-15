@@ -1,11 +1,13 @@
 package org.abno.games;
 
+import org.abno.players.PlayerData;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Random;
 
-public class MemoryPath extends JFrame {
+public class MemoryPath extends JFrame implements Game{
     private final int rows = 6;
     private final int cols = 3;
     private JButton[][] buttons;
@@ -13,6 +15,7 @@ public class MemoryPath extends JFrame {
     private int currentAttempt;
     private int errors;
     private final int maxAttempts = 3;
+    private boolean win = false;
 
     public MemoryPath() {
         setTitle("Memory Path Game");
@@ -20,6 +23,10 @@ public class MemoryPath extends JFrame {
         setLayout(new GridLayout(rows, cols));
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
+    }
+
+    private void initialize(){
+        getContentPane().removeAll();
         buttons = new JButton[rows][cols];
         correctPath = new int[rows];
         currentAttempt = 0;
@@ -37,8 +44,8 @@ public class MemoryPath extends JFrame {
 
 
         generateRandomPath();
-
-        setVisible(true);
+        revalidate();
+        repaint();
     }
 
 
@@ -46,6 +53,7 @@ public class MemoryPath extends JFrame {
         Random rand = new Random();
         for (int i = 0; i < rows; i++) {
             correctPath[i] = rand.nextInt(cols);
+            System.out.println(i);
         }
     }
 
@@ -101,6 +109,7 @@ public class MemoryPath extends JFrame {
                 if (currentAttempt == rows) {
 
                     JOptionPane.showMessageDialog(null, "¡Ganaste!");
+                    win = true;
                     resetGame();
                 }
             } else {
@@ -109,7 +118,9 @@ public class MemoryPath extends JFrame {
                 if (errors >= maxAttempts) {
 
                     JOptionPane.showMessageDialog(null, "¡Perdiste!");
-                    System.exit(0);
+                    win = false;
+                    dispose();
+
                 } else {
 
                     JOptionPane.showMessageDialog(null, "¡Fallaste! Vuelve a intentarlo.");
@@ -119,7 +130,20 @@ public class MemoryPath extends JFrame {
         }
     }
 
-    public static void main(String[] args) {
-        new MemoryPath();
+    @Override
+    public boolean won() {
+        return win;
+    }
+
+    public void play(PlayerData player) {
+        MemoryPath game = new MemoryPath();
+        initialize();
+        setVisible(true);
+        if (win){
+            player.setInteractWin(true);
+        }
+
+        game.setVisible(false);
+        resetGame();
     }
 }

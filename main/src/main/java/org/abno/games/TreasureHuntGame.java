@@ -21,20 +21,21 @@ public class TreasureHuntGame extends JFrame implements Game {
 
     private static boolean win = false;
 
+
     public TreasureHuntGame() {
         setTitle("Treasure Hunt Game");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         initializeIcons();
-        initializeGame();
+
         setSize(boardSize * 50, boardSize * 50);
-        setVisible(true);
+
     }
 
     private void initializeIcons() {
       
-        explosionIcon = resizeIcon(new ImageIcon("src/main/java/utils/explosion.png"), 50, 50);
-        treasureIcon = resizeIcon(new ImageIcon("src/main/java/utils/coin.png"), 50, 50);
+        explosionIcon = resizeIcon(new ImageIcon("C:\\Users\\natal\\Desktop\\sage\\MarioPoorty\\main\\src\\main\\java\\utils\\explosion.png"), 50, 50);
+        treasureIcon = resizeIcon(new ImageIcon("C:\\Users\\natal\\Desktop\\sage\\MarioPoorty\\main\\src\\main\\java\\utils\\coin.png"), 50, 50);
     }
 
     private ImageIcon resizeIcon(ImageIcon icon, int width, int height) {
@@ -130,10 +131,13 @@ public class TreasureHuntGame extends JFrame implements Game {
         if (foundTreasures == 4) {
             JOptionPane.showMessageDialog(this, "¡Has encontrado el tesoro! ¡Ganaste!");
             win = true;
-            //resetGame();
+            setVisible(false);
+            resetGame();
         } else if (remainingBombs <= 0) {
             JOptionPane.showMessageDialog(this, "¡Te quedaste sin bombas! ¡Perdiste!");
-            //resetGame();
+            win = false;
+            setVisible(false);
+            resetGame();
         }
     }
 
@@ -143,23 +147,44 @@ public class TreasureHuntGame extends JFrame implements Game {
                 foundTreasures++;
                 grid[row][col].setIcon(treasureIcon);
             } else {
-                grid[row][col].setIcon(explosionIcon);
+                if (grid[row][col].getIcon()!=treasureIcon) {
+                    grid[row][col].setIcon(explosionIcon);}
             }
         }
     }
 
     private void resetGame() {
-        for (int i = 0; i < boardSize; i++) {
-            for (int j = 0; j < boardSize; j++) {
-                grid[i][j].setIcon(null);
-                grid[i][j].setBackground(Color.LIGHT_GRAY);
-                board[i][j] = 0;
-            }
-        }
+
+        getContentPane().removeAll();
+
+
+        board = new int[boardSize][boardSize];
+        grid = new JButton[boardSize][boardSize];
         remainingBombs = 7;
         foundTreasures = 0;
+
+
+        setLayout(new GridLayout(boardSize, boardSize));
+
+
+        for (int i = 0; i < boardSize; i++) {
+            for (int j = 0; j < boardSize; j++) {
+                JButton button = new JButton();
+                button.setBackground(Color.LIGHT_GRAY);
+                button.addActionListener(new CellClickListener(i, j));
+                grid[i][j] = button;
+                add(button);
+            }
+        }
+
+
         placeTreasure();
+
+
+        revalidate();
+        repaint();
     }
+
 
     private class CellClickListener implements ActionListener {
         private final int row, col;
@@ -181,13 +206,23 @@ public class TreasureHuntGame extends JFrame implements Game {
         }
     }
 
+    @Override
+    public boolean won() {
+        return win;
+    }
+
+
+
     public void play(PlayerData player) {
         TreasureHuntGame game = new TreasureHuntGame();
+        initializeGame();
+        setVisible(true);
 
         if (win){
-            player.changeInteract();
+            player.setInteractWin(true);
         }
 
         game.setVisible(false);
+        resetGame();
     }
 }

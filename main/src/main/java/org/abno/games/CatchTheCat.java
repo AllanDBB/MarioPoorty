@@ -1,5 +1,7 @@
 package org.abno.games;
 
+import org.abno.players.PlayerData;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -7,12 +9,13 @@ import java.awt.event.ActionListener;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class CatchTheCat extends JFrame {
+public class CatchTheCat extends JFrame implements Game{
     private final int size = 11;
     private final JButton[][] grid = new JButton[size][size];
     private final boolean[][] blocked = new boolean[size][size];
     private int catRow = size / 2;
     private int catCol = size / 2;
+    private boolean win = false;
 
     public CatchTheCat() {
         setTitle("Catch the Cat");
@@ -21,7 +24,7 @@ public class CatchTheCat extends JFrame {
         setLayout(new GridLayout(size, size));
 
         initializeBoard();
-        setVisible(true);
+
     }
 
 
@@ -118,7 +121,8 @@ public class CatchTheCat extends JFrame {
         } else {
 
             JOptionPane.showMessageDialog(this, "¡Felicidades! Has atrapado al gato.");
-            resetGame();
+            win = true;
+            //resetGame();
         }
     }
 
@@ -160,7 +164,14 @@ public class CatchTheCat extends JFrame {
         grid[catRow][catCol].setBackground(Color.ORANGE);
     }
 
-    public static void main(String[] args) {
-        new CatchTheCat();
+    public void play(PlayerData player) {
+        CatchTheCat game = new CatchTheCat();
+        setVisible(true);
+
+        if (win){
+            player.changeInteract();
+        }
+
+        game.setVisible(false);
     }
 }

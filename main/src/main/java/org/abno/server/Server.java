@@ -11,7 +11,9 @@ import org.abno.board.EvilTiles.FireFlower;
 import org.abno.board.EvilTiles.IceFlower;
 import org.abno.board.EvilTiles.Jail;
 import org.abno.board.EvilTiles.Tail;
+import org.abno.board.SpecialTile;
 import org.abno.board.Tile;
+import org.abno.games.Game;
 import org.abno.players.PlayerData;
 import org.abno.players.Token;
 import org.abno.players.Dices;
@@ -323,24 +325,33 @@ public class Server {
 
                 Server.sendToAll(rollMessage);
 
-                if (clientData.get(playerId).getToken().getTile().getId()+total >= 38){
+                if (clientData.get(playerId).getToken().getTile().getId()+total == 38){
                     gameEnded = true;
 
                     sendToAll("FIN YA GANARON");
                     gameStarted = false;
                     return;
-                } else{
+                } else if (clientData.get(playerId).getToken().getTile().getId()+total > 38){
+                    int dif = clientData.get(playerId).getToken().getTile().getId()+total -38;
+                    clientData.get(playerId).getToken().setTile(board.getTiles().get(38-dif));
+                }
+                else{
                     handleMove(playerId, total);
                     sendToClient(playerId, String.valueOf(data.getToken().getTile().getId())+" es el cuadro actual ");
 
                     if (data.isRollDiceAgain()){
+                        data.setRollDiceAgain(false);
                         handleRoll(playerId);
                     }
 
                     if (data.getOffset()>0){
-                        if (data.getToken().getTile().getId()+data.getOffset()>=38){
+                        if (data.getToken().getTile().getId()+data.getOffset()==38){
                             gameEnded = true;
-                        } else if (data.getToken().getTile().getId()+data.getOffset()<=0){
+                        } else if (data.getToken().getTile().getId()+data.getOffset()>38){
+                            int dif = data.getToken().getTile().getId()+data.getOffset()-38;
+                            data.getToken().setTile(board.getTiles().get(38-dif));
+                        }
+                        else if (data.getToken().getTile().getId()+data.getOffset()<=0){
                             data.getToken().setTile(board.getTiles().get(0));
                             endTurn();
                         }
@@ -358,8 +369,15 @@ public class Server {
         private void handleMove(String playerId, int spaces) throws IOException {
 
             int actualTile = clientData.get(playerId).getToken().getTile().getId();
-            clientData.get(playerId).getToken().setTile(board.getTiles().get(actualTile+spaces));
+
+            if (clientData.get(playerId).isInteractWin()){
+                clientData.get(playerId).getToken().setTile(board.getTiles().get(actualTile+spaces));
+            } //si no ganó el pasado, se queda repitiendo ese hasta que lo logre
+
+
             PlayerData data = clientData.get(playerId);
+
+
 
             for (Tile t : board.getTiles()){
                 if (t.getId() == clientData.get(playerId).getToken().getTile().getId()){
@@ -384,10 +402,22 @@ public class Server {
                     else{
                     out.println("Entraste a una casilla WUJUU! " + t.getClass());
                     t.interact(data);
+
+                    if (board.getTiles().get(data.getToken().getTile().getId()).getClass() == SpecialTile.class){
+                        SpecialTile g = (SpecialTile) board.getTiles().get(data.getToken().getTile().getId());
+                        if (g.getGame().won()){
+                            System.out.println("si");
+                            data.setInteractWin(true);
+                        } else{
+                            System.out.println("no");
+                            data.setInteractWin(false);
+                        }
+                    }
                     }
                 }
 
             }
+
         }
 
         private void endTurn() {

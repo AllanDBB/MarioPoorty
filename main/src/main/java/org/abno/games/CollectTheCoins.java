@@ -1,5 +1,7 @@
 package org.abno.games;
 
+import org.abno.players.PlayerData;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -8,7 +10,7 @@ import java.io.IOException;
 import java.util.Random;
 import javax.imageio.ImageIO;
 
-public class CollectTheCoins extends JFrame {
+public class CollectTheCoins extends JFrame implements Game{
     private static final int GRID_SIZE = 25;
     private static final int TOTAL_CELLS = GRID_SIZE * GRID_SIZE;
     private JButton[][] gridButtons;
@@ -19,6 +21,7 @@ public class CollectTheCoins extends JFrame {
     private Image goodCoinImage;
     private Image badCoinImage;
     private Image unknownCoinImage;
+    private boolean win;
 
     public CollectTheCoins() {
         super("Collect the Coins");
@@ -29,9 +32,9 @@ public class CollectTheCoins extends JFrame {
 
         try {
 
-            goodCoinImage = ImageIO.read(new File("C:\\Users\\adbyb\\OneDrive\\Documentos\\GitHub\\MarioPoorty\\main\\src\\main\\java\\utils\\coin.png")).getScaledInstance(20, 20, Image.SCALE_SMOOTH);
-            badCoinImage = ImageIO.read(new File("C:\\Users\\adbyb\\OneDrive\\Documentos\\GitHub\\MarioPoorty\\main\\src\\main\\java\\utils\\redCoin.png")).getScaledInstance(20, 20, Image.SCALE_SMOOTH);
-            unknownCoinImage = ImageIO.read(new File("C:\\Users\\adbyb\\OneDrive\\Documentos\\GitHub\\MarioPoorty\\main\\src\\main\\java\\utils\\unknown.png")).getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+            goodCoinImage = ImageIO.read(new File("main/src/main/java/utils/coin.png")).getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+            badCoinImage = ImageIO.read(new File("main/src/main/java/utils/redCoin.png")).getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+            unknownCoinImage = ImageIO.read(new File("main/src/main/java/utils/unknown.png")).getScaledInstance(20, 20, Image.SCALE_SMOOTH);
         } catch (IOException e) {
             System.out.println("Error al cargar las imágenes: " + e.getMessage());
         }
@@ -64,7 +67,7 @@ public class CollectTheCoins extends JFrame {
 
         setSize(600, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setVisible(true);
+
     }
 
     private void initializeGrid(JPanel gridPanel) {
@@ -108,9 +111,18 @@ public class CollectTheCoins extends JFrame {
         scoreLabel.setText("Final Score: " + score);
         String message = score > 0 ? "Congratulations, you won!" : "Sorry, you lost!";
         JOptionPane.showMessageDialog(this, message);
+        if (score>0){
+            win = true;
+        }
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(CollectTheCoins::new);
+    public void play(PlayerData player) {
+        CollectTheCoins game = new CollectTheCoins();
+        setVisible(true);
+        if (win){
+            player.changeInteract();
+        }
+
+        game.setVisible(false);
     }
 }

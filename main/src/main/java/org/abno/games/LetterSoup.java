@@ -1,5 +1,7 @@
 package org.abno.games;
 
+import org.abno.players.PlayerData;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
@@ -7,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class LetterSoup {
+public class LetterSoup implements Game {
 
     private static final int SIZE = 10;
     private char[][] board = new char[SIZE][SIZE];
@@ -18,42 +20,43 @@ public class LetterSoup {
     private JFrame frame;
     private JPanel panel;
     private JTextField wordInputField;
+    private boolean win = false;
+    private Timer timer;
+    private int TIME_LIMIT = 120;
 
     public LetterSoup() {
 
-        loadWordsFromFile("C:\\Users\\adbyb\\OneDrive\\Documentos\\GitHub\\MarioPoorty\\main\\src\\main\\java\\utils\\words");
-
-
-        selectRandomWords(4);
-
-
-        fillBoardWithRandomLetters();
-
-
-        placeWords();
-
-
-        createAndShowGUI();
     }
 
+    private void initialize() {
+        words.clear();
+        selectedWords.clear();
+        foundWords.clear();
+        board = new char[SIZE][SIZE];
+        occupied = new boolean[SIZE][SIZE];
+        TIME_LIMIT = 120;
+
+        loadWordsFromFile("main/src/main/java/utils/words");
+        selectRandomWords(4);
+        fillBoardWithRandomLetters();
+        placeWords();
+    }
 
     private void loadWordsFromFile(String fileName) {
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = br.readLine()) != null) {
-
                 words.add(line.trim().toUpperCase());
+
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-
     private void selectRandomWords(int n) {
         Random random = new Random();
         List<String> selectedWordsTemp = new ArrayList<>();
-
         for (int i = 0; i < n; i++) {
             String word;
             do {
@@ -62,10 +65,8 @@ public class LetterSoup {
             selectedWordsTemp.add(word);
             System.out.println(word);
         }
-
         selectedWords = selectedWordsTemp;
     }
-
 
     private void fillBoardWithRandomLetters() {
         for (int i = 0; i < SIZE; i++) {
@@ -75,29 +76,22 @@ public class LetterSoup {
         }
     }
 
-
     private boolean canPlaceWord(String word, int row, int col, int direction) {
         for (int i = 0; i < word.length(); i++) {
             int r = row;
             int c = col;
             switch (direction) {
-                case 0:
-                    c += i;
-                    break;
-                case 1:
-                    r += i;
-                    break;
-                case 2:
+                case 0 -> c += i;
+                case 1 -> r += i;
+                case 2 -> {
                     r += i;
                     c += i;
-                    break;
-                case 3:
+                }
+                case 3 -> {
                     r -= i;
                     c += i;
-                    break;
+                }
             }
-
-
             if (r < 0 || r >= SIZE || c < 0 || c >= SIZE || occupied[r][c]) {
                 return false;
             }
@@ -105,45 +99,35 @@ public class LetterSoup {
         return true;
     }
 
-
     private void placeWord(String word, int row, int col, int direction) {
         for (int i = 0; i < word.length(); i++) {
             int r = row;
             int c = col;
             switch (direction) {
-                case 0:
-                    c += i;
-                    break;
-                case 1:
-                    r += i;
-                    break;
-                case 2:
+                case 0 -> c += i;
+                case 1 -> r += i;
+                case 2 -> {
                     r += i;
                     c += i;
-                    break;
-                case 3:
+                }
+                case 3 -> {
                     r -= i;
                     c += i;
-                    break;
+                }
             }
             board[r][c] = word.charAt(i);
             occupied[r][c] = true;
         }
     }
 
-
     private void placeWords() {
         Random random = new Random();
-
-
         for (String word : selectedWords) {
             boolean placed = false;
             while (!placed) {
                 int direction = random.nextInt(4);
                 int row = random.nextInt(SIZE);
                 int col = random.nextInt(SIZE);
-
-
                 if (canPlaceWord(word, row, col, direction)) {
                     placeWord(word, row, col, direction);
                     placed = true;
@@ -152,12 +136,10 @@ public class LetterSoup {
         }
     }
 
-
     private void createAndShowGUI() {
         frame = new JFrame("Letter Soup");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         panel = new JPanel(new BorderLayout());
-
 
         JPanel boardPanel = new JPanel(new GridLayout(SIZE, SIZE));
         for (int i = 0; i < SIZE; i++) {
@@ -169,10 +151,8 @@ public class LetterSoup {
             }
         }
 
-
         JPanel bottomPanel = new JPanel();
         bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.Y_AXIS));
-
 
         JLabel foundWordsLabel = new JLabel("Palabras encontradas:");
         bottomPanel.add(foundWordsLabel);
@@ -181,10 +161,8 @@ public class LetterSoup {
         foundWordsArea.setEditable(false);
         bottomPanel.add(new JScrollPane(foundWordsArea));
 
-
         wordInputField = new JTextField(15);
         JButton checkButton = new JButton("Verificar palabra");
-
 
         checkButton.addActionListener(e -> {
             String enteredWord = wordInputField.getText().toUpperCase();
@@ -192,11 +170,11 @@ public class LetterSoup {
                 foundWords.add(enteredWord);
                 foundWordsArea.append(enteredWord + "\n");
                 wordInputField.setText("");
-
-
                 if (foundWords.size() == selectedWords.size()) {
                     JOptionPane.showMessageDialog(frame, "¡Felicidades, has encontrado todas las palabras!");
-                    System.exit(0);
+                    win = true;
+                    timer.stop();
+                    frame.dispose();
                 }
             }
         });
@@ -204,18 +182,45 @@ public class LetterSoup {
         bottomPanel.add(wordInputField);
         bottomPanel.add(checkButton);
 
-
         panel.add(boardPanel, BorderLayout.CENTER);
         panel.add(bottomPanel, BorderLayout.SOUTH);
-
 
         frame.add(panel);
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+
+        startTimer();
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new LetterSoup());
+    private void startTimer() {
+        timer = new Timer(1000, e -> {
+            if (--TIME_LIMIT <= 0) {
+                timer.stop();
+                JOptionPane.showMessageDialog(frame, "Se acabó el tiempo. ¡Perdiste!");
+                win = false;
+                frame.dispose();
+            }
+        });
+        timer.start();
+    }
+    @Override
+    public boolean won() {
+        System.out.println(win);
+        return win;
+
+    }
+
+    public void play(PlayerData player) {
+        LetterSoup game = new LetterSoup();
+        initialize();
+        createAndShowGUI();
+
+        if (win) {
+            player.setInteractWin(true);
+        }
+
+
+
     }
 }

@@ -14,4 +14,11 @@ public class SpecialTile extends Tile{
     public void interact(PlayerData player){;
     }
 
+    public Game getGame() {
+        return game;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
+    }
 }
