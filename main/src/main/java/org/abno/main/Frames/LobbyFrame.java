@@ -37,7 +37,7 @@ public class LobbyFrame extends JFrame {
 
         // Add the side panel (with existing components)
         JPanel sidePanel = createSidePanel();
-        sidePanel.setBounds(0, 0, SCREEN_SIZE.width / 3, SCREEN_SIZE.height);
+        sidePanel.setBounds(100, 100, 400, 768);
 
         // Create and position the new container
         JPanel newContainer = createNewContainer();
@@ -159,8 +159,8 @@ public class LobbyFrame extends JFrame {
     }
 
     private Rectangle calculateNewContainerBounds() {
-        int rightX = SCREEN_SIZE.width - 100 - CONTAINER_SIZE.width; // Position relative to the right side
-        int topY = SCREEN_SIZE.height / 9;  // 2/3 of height / 6
+        int rightX = SCREEN_SIZE.width - 200 - CONTAINER_SIZE.width; // Position relative to the right side
+        int topY = SCREEN_SIZE.height / 4;
         return new Rectangle(rightX, topY, CONTAINER_SIZE.width, CONTAINER_SIZE.height);
     }
 

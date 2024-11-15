@@ -26,9 +26,27 @@ public class PregameFrame extends JFrame {
         label.setVerticalAlignment(SwingConstants.CENTER);
 
         mainPanel.add(label, BorderLayout.CENTER);
+
+        // Create and add the Chat component
+        Chat chatComponent = new Chat("user");
+
+        // Create a wrapper panel for the chat with padding
+        JPanel chatWrapper = new JPanel(new BorderLayout());
+        chatWrapper.setBorder(BorderFactory.createEmptyBorder(10, 0, 30, 0)); // Increased spacing at the bottom
+        chatWrapper.setOpaque(false); // Make the wrapper panel transparent
+        chatWrapper.add(chatComponent, BorderLayout.SOUTH);
+
+        // Add the chat wrapper to the main panel at the bottom
+        mainPanel.add(chatWrapper, BorderLayout.SOUTH);
+
+        // Add the main panel to the frame
         add(mainPanel);
 
         // Make sure frame is visible
         setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        new PregameFrame();
     }
 }
