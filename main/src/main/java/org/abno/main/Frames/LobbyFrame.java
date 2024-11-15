@@ -242,9 +242,11 @@ public class LobbyFrame extends JFrame {
 
                 Client.sendValue(selectedId);
                 Client.sendValue(selectedToken);
+
                 // Switching to PregameFrame
                 SwingUtilities.invokeLater(() -> {
-                    new PregameFrame();
+                    Client.setChatLog(new Chat(selectedId));
+                    new PregameFrame(Client.getChat());
                     LobbyFrame.this.dispose(); // Dispose the current frame
                 });
             } else {

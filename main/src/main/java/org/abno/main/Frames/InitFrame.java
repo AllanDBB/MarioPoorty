@@ -2,7 +2,6 @@ package org.abno.main.Frames;
 
 import javax.swing.*;
 import java.awt.*;
-import org.abno.server.Server;
 
 import java.io.PrintWriter;
 import java.io.BufferedReader;
@@ -120,21 +119,9 @@ public class InitFrame extends JFrame {
             dispose();
         });
 
-        startServer();
-
         return startButton;
     }
 
-    private void startServer() {
-        new Thread(() -> {
-            try {
-                System.out.println("Starting the server...");
-                Server.main(new String[]{});
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
-    }
 
     private static class RoundedPanel extends JPanel {
         private final int radius;

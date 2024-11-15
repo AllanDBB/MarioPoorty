@@ -1,5 +1,7 @@
 package org.abno.main.Frames;
 
+import org.abno.server.Client;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -17,7 +19,7 @@ public class Chat extends JPanel {
     private static final Dimension CHAT_INPUT_SIZE = new Dimension(1092, 50);
 
     public Chat(String selectedId) {
-        currentUser = selectedId;
+        this.currentUser = selectedId;
 
         setUpMainPanel();
         add(setUpChatLogPanel(), BorderLayout.NORTH);
@@ -79,12 +81,13 @@ public class Chat extends JPanel {
         chatInput.setCaretColor(Color.BLACK); // Caret color for visibility
 
         // Add action listener to handle Enter key press
+
         chatInput.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String text = chatInput.getText().trim();
                 if (!text.isEmpty()) {
-                    chatLog.append(String.format("%s: \"%s\"%n", currentUser, text));
+                    Client.sendValue(text);
                     chatInput.setText("");
                 }
             }
@@ -93,17 +96,10 @@ public class Chat extends JPanel {
         return chatInput;
     }
 
-    public void setCurrentUser(String currentUser) {
-        this.currentUser = currentUser;
+    public void externMessage(String message, String user){
+        if (!message.isEmpty()){
+            chatLog.append(String.format("%s %s%n", user, message));
+        }
     }
 
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("Chat Component");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLayout(new BorderLayout());
-        frame.add(new Chat("user12345"), BorderLayout.CENTER);
-        frame.pack();
-        frame.setMinimumSize(new Dimension(1092, 150));
-        frame.setVisible(true);
-    }
 }

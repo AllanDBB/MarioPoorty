@@ -3,6 +3,9 @@ package org.abno.server;
 import java.io.*;
 import java.net.*;
 import org.abno.main.Frames.InitFrame;
+import org.abno.main.Frames.Chat;
+
+import javax.swing.*;
 
 public class Client {
 
@@ -10,6 +13,7 @@ public class Client {
     private static final int SERVER_PORT = 12345;
 
     private static PrintWriter out;
+    private static Chat chatLog;
 
     private static void init() {
         new InitFrame();
@@ -22,6 +26,12 @@ public class Client {
         } else {
             System.out.println("Vea mi loco algo pasó, usted compiló está vara y no debería de funcionar XD");
         }
+    }
+    public static void setChatLog(Chat chatLog){
+        Client.chatLog = chatLog;
+    }
+    public static Chat getChat(){
+        return chatLog;
     }
 
     public static void main(String[] args) {
@@ -38,7 +48,9 @@ public class Client {
                 try {
                     String message;
                     while ((message = in.readLine()) != null) {
-                        System.out.println("Mensaje del servidor: " + message);
+                        if (chatLog != null) {
+                            chatLog.externMessage(message, "");
+                        }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

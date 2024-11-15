@@ -213,7 +213,6 @@ public class Server {
 
                 String message;
                 while ((message = in.readLine()) != null) {
-                    System.out.println("Message from " + clientId + ": " + message);
                     processMessage(clientId, message);
                 }
 

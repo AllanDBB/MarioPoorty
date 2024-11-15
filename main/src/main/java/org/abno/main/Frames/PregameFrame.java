@@ -8,7 +8,7 @@ public class PregameFrame extends JFrame {
     private static final Color BACKGROUND_COLOR = new Color(45, 21, 92); // Same background color as LobbyFrame
     private static final Color TEXT_COLOR = Color.WHITE; // Text color for visibility
 
-    public PregameFrame() {
+    public PregameFrame(Chat chatComponent) {
         setTitle("Pregame");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(SCREEN_SIZE);
@@ -27,8 +27,6 @@ public class PregameFrame extends JFrame {
 
         mainPanel.add(label, BorderLayout.CENTER);
 
-        // Create and add the Chat component
-        Chat chatComponent = new Chat("user");
 
         // Create a wrapper panel for the chat with padding
         JPanel chatWrapper = new JPanel(new BorderLayout());
@@ -46,7 +44,4 @@ public class PregameFrame extends JFrame {
         setVisible(true);
     }
 
-    public static void main(String[] args) {
-        new PregameFrame();
-    }
 }
