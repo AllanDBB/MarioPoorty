@@ -3,12 +3,9 @@ package org.abno.main.Frames;
 import javax.swing.*;
 import java.awt.*;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import org.abno.players.Token;
+import org.abno.server.Client;
 import org.abno.server.Server;
-
 
 public class PregameFrame extends JFrame {
     private static final Dimension SCREEN_SIZE = new Dimension(1366, 768);
@@ -16,7 +13,6 @@ public class PregameFrame extends JFrame {
     private static final Color TEXT_COLOR = Color.WHITE;
     private static final Dimension IMAGE_SIZE = new Dimension(300, 300);
     private boolean isReady = false;
-    private Timer updateTimer;
 
     public PregameFrame(Chat chatComponent, String selectedId, String selectedToken) {
         setTitle("Pregame");
@@ -25,18 +21,21 @@ public class PregameFrame extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        JPanel mainPanel = new JPanel(new BorderLayout());
+        JPanel mainPanel = new JPanel(new GridBagLayout());
         mainPanel.setBackground(BACKGROUND_COLOR);
         add(mainPanel, BorderLayout.CENTER);
 
-        Dimension containerSize = new Dimension(IMAGE_SIZE.width + 50, SCREEN_SIZE.height / 2);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10); // Padding around components
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.anchor = GridBagConstraints.CENTER;
 
         JPanel containerPanel = new JPanel();
         containerPanel.setLayout(new BoxLayout(containerPanel, BoxLayout.Y_AXIS));
         containerPanel.setBackground(BACKGROUND_COLOR);
         containerPanel.setBorder(BorderFactory.createLineBorder(Color.WHITE, 5));
-        containerPanel.setPreferredSize(containerSize);
-        containerPanel.setMaximumSize(containerSize);
         containerPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel userLabel = new JLabel(selectedId + " (you)");
@@ -51,6 +50,7 @@ public class PregameFrame extends JFrame {
         Token selectedTokenObj = Server.getTokenByName(selectedToken);
         if (selectedTokenObj != null) {
             ImagePanel imagePanel = new ImagePanel(selectedTokenObj.getImg(), IMAGE_SIZE);
+            imagePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
             containerPanel.add(imagePanel);
         } else {
             System.out.println("Token not found: " + selectedToken);
@@ -62,20 +62,17 @@ public class PregameFrame extends JFrame {
         readyButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         containerPanel.add(readyButton);
 
-        JPanel leftAlignedPanel = new JPanel(new GridBagLayout());
-        leftAlignedPanel.setBackground(BACKGROUND_COLOR);
-        int paddingLeft = SCREEN_SIZE.width / 12;
-        leftAlignedPanel.setBorder(BorderFactory.createEmptyBorder(0, paddingLeft, 0, 0));
-        leftAlignedPanel.add(containerPanel);
-        mainPanel.add(leftAlignedPanel, BorderLayout.WEST);
+        // Add container panel to main panel
+        mainPanel.add(containerPanel, gbc);
 
+        // Configure and add chat component at the bottom
+        gbc.gridy++;
         JPanel chatWrapper = new JPanel(new BorderLayout());
         chatWrapper.setBorder(BorderFactory.createEmptyBorder(10, 0, 30, 0));
         chatWrapper.setOpaque(false);
         chatWrapper.add(chatComponent, BorderLayout.SOUTH);
-        mainPanel.add(chatWrapper, BorderLayout.SOUTH);
 
-        startUpdateTimer();
+        mainPanel.add(chatWrapper, gbc);
 
         setVisible(true);
     }
@@ -95,40 +92,11 @@ public class PregameFrame extends JFrame {
                 readyButton.setText("Ready");
                 readyButton.setBackground(BACKGROUND_COLOR.darker());
                 readyButton.setEnabled(false);
-                System.out.println("Player is ready.");
+                Client.sendValue("@Ready");
             }
         });
 
         return readyButton;
-    }
-
-    private void startUpdateTimer() {
-        updateTimer = new Timer(true);
-        updateTimer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                List<String> playersQueue = Server.getPlayersQueue();
-                System.out.println("Players queue size: " + playersQueue.size());
-                printPlayersQueue(playersQueue);
-            }
-        }, 0, 1000);
-    }
-
-    private void printPlayersQueue(List<String> playersQueue) {
-        SwingUtilities.invokeLater(() -> {
-            System.out.println("Current Players Queue:");
-            for (String playerId : playersQueue) {
-                System.out.println("Player ID: " + playerId);
-            }
-        });
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
-        if (updateTimer != null) {
-            updateTimer.cancel();
-        }
     }
 
     static class ImagePanel extends JPanel {

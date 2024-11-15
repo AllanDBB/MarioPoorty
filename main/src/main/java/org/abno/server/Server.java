@@ -59,9 +59,6 @@ public class Server {
         return Collections.unmodifiableSet(availableTokens);
     }
 
-    public static List<String> getPlayersQueue(){
-        return playersQueue;
-    }
     // Game
     private static boolean gameStarted = false;
     private static List<String> playersQueue = new CopyOnWriteArrayList<>();
@@ -84,7 +81,7 @@ public class Server {
             e.printStackTrace();
         }
     }
-    
+
 
     private static synchronized void startGame() {
         if (playersQueue.size() == activePlayers && !gameStarted && playersQueue.size() > 1) {
@@ -154,7 +151,7 @@ public class Server {
             }
         }
     }
-    
+
     private static synchronized void sendToAll(String message) {
         for (PlayerData data : clientData.values()) {
             data.getWriter().println(message);
@@ -275,7 +272,6 @@ public class Server {
             if(recipientData != null) {
                 recipientData.setReady();
                 Server.playersQueue.add(playerReady);
-                System.out.println("Tamano :" + playersQueue.size());
                 Server.sendToAll("Player " + playerReady + " is ready to start.");
                 Server.startGame();
             } else {
