@@ -10,7 +10,7 @@ import javax.swing.*;
 public class Client {
 
     private static final String SERVER_ADDRESS = "localhost";
-    private static final int SERVER_PORT = 12345;
+    private static final int SERVER_PORT = 12346;
 
     private static PrintWriter out;
     private static Chat chatLog;

@@ -246,7 +246,7 @@ public class LobbyFrame extends JFrame {
                 // Switching to PregameFrame
                 SwingUtilities.invokeLater(() -> {
                     Client.setChatLog(new Chat(selectedId));
-                    new PregameFrame(Client.getChat());
+                    new PregameFrame(Client.getChat(),selectedId,selectedToken);
                     LobbyFrame.this.dispose(); // Dispose the current frame
                 });
             } else {

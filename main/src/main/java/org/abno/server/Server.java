@@ -20,7 +20,7 @@ import org.abno.games.TicTacToe;
 public class Server {
 
     // Server configuration:
-    private static final int PORT = 12345;
+    private static final int PORT = 12346;
     private static final int MAX_PLAYERS = 6;
     private static Map<String, PlayerData> clientData = new HashMap<>();
     private static int activePlayers = 0;

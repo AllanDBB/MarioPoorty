@@ -4,8 +4,8 @@ import org.abno.server.Client;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 public class Chat extends JPanel {
 
@@ -73,19 +73,42 @@ public class Chat extends JPanel {
         JTextField chatInput = new JTextField();
         chatInput.setPreferredSize(CHAT_INPUT_SIZE);
         chatInput.setFont(CHAT_FONT);
-        chatInput.setBackground(Color.WHITE); // Changed to white
-        chatInput.setForeground(Color.BLACK); // Changed for contrast with white background
-        chatInput.setCaretColor(Color.BLACK); // Caret color for visibility
+        chatInput.setBackground(Color.WHITE);
+        chatInput.setForeground(Color.BLACK);
+        chatInput.setCaretColor(Color.BLACK);
 
-        // Add action listener to handle Enter key press
+        final String placeholderText = "Type your message here...";
 
-        chatInput.addActionListener(new ActionListener() {
+        // Setting the initial placeholder text and color
+        chatInput.setText(placeholderText);
+        chatInput.setForeground(Color.GRAY);
+
+        chatInput.addFocusListener(new FocusAdapter() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                String text = chatInput.getText().trim();
-                if (!text.isEmpty()) {
-                    Client.sendValue(text);
+            public void focusGained(FocusEvent e) {
+                if (chatInput.getText().equals(placeholderText)) {
                     chatInput.setText("");
+                    chatInput.setForeground(Color.BLACK);
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (chatInput.getText().isEmpty()) {
+                    chatInput.setText(placeholderText);
+                    chatInput.setForeground(Color.GRAY);
+                }
+            }
+        });
+
+        chatInput.addActionListener(e -> {
+            String text = chatInput.getText().trim();
+            if (!text.isEmpty() && !text.equals(placeholderText)) {
+                Client.sendValue(text);
+                chatInput.setText("");
+                if (!chatInput.hasFocus()) {
+                    chatInput.setText(placeholderText);
+                    chatInput.setForeground(Color.GRAY);
                 }
             }
         });
@@ -93,11 +116,10 @@ public class Chat extends JPanel {
         return chatInput;
     }
 
-    public void externMessage(String message, String user){
-        if (!message.isEmpty()){
+    public void externMessage(String message, String user) {
+        if (!message.isEmpty()) {
             chatLog.append(String.format("%s %s%n", user, message));
             chatLog.setCaretPosition(chatLog.getDocument().getLength());
         }
     }
-
 }
