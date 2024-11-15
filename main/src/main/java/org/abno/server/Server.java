@@ -100,8 +100,8 @@ public class Server {
 
     private static void determinePlayerOrder() {
         Random random = new Random();
-        int option = random.nextInt(2); // 0 o 1
-
+        int option = random.nextInt(1) + 1; // 0 o 1
+    
         if (option == 0) {
             // Opción 1: Los jugadores eligen un número y se compara con un aleatorio
             randomNumber randomNumberGenerator = new randomNumber();
