@@ -1,5 +1,8 @@
 package org.abno.main.Frames;
 
+import org.abno.players.Dices;
+import org.abno.server.Client;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -49,6 +52,7 @@ public class Dice extends JPanel {
                 repaint();
                 System.out.println("Dice 1 Final face: " + (finalFaceIndex1));
                 System.out.println("Dice 2 Final face: " + (finalFaceIndex2));
+
             }
         };
 
@@ -95,9 +99,14 @@ public class Dice extends JPanel {
         JButton rollButton = new JButton("Roll Dice");
         rollButton.addActionListener(e -> {
             // Example: manually setting the final face indices for both dice
-            int finalFace1 = 4; // These can be set programmatically or by user input
-            int finalFace2 = 2; // These can be set programmatically or by user input
+            Client.sendValue("@Roll");
+            Dices dices = new Dices();
+            dices.roll();
+            int finalFace1= dices.getDice1();
+            int finalFace2 = dices.getDice2();
             dice.rollDice(finalFace1, finalFace2);
+            Client.sendValue(Integer.toString(finalFace1));
+            Client.sendValue(Integer.toString(finalFace2));
         });
 
         frame.setLayout(new BorderLayout());

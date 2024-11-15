@@ -306,14 +306,17 @@ public class Server {
                     return;
                 }
 
-
-
-                Dices dices = new Dices();
-                dices.roll();
-
-                int dice1 = dices.getDice1();
-                int dice2 = dices.getDice2();
-                int total = dices.getTotal();
+                int dice1 = Integer.parseInt(in.readLine());
+                int dice2 = Integer.parseInt(in.readLine());
+                if (dice1 == 6){
+                    data.setLostTurns(data.getLostTurns()+1);
+                    sendToClient(playerId, String.valueOf(data.getLostTurns())+" turnos restantes sin jugar");
+                }
+                if (dice2 == 6){
+                    data.setLostTurns(data.getLostTurns()+1);
+                    sendToClient(playerId, String.valueOf(data.getLostTurns())+" turnos restantes sin jugar");
+                }
+                int total = dice1+dice2;
 
                 String rollMessage = "Player " + playerId + " rolled the dice: "
                         + dice1 + " and " + dice2 + " (Total: " + total + ")";
