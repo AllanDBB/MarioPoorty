@@ -1,12 +1,14 @@
 package org.abno.games;
 
+import org.abno.players.PlayerData;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Random;
 
-public class TreasureHuntGame extends JFrame {
+public class TreasureHuntGame extends JFrame implements Game {
     private JButton[][] grid;
     private int[][] board;
     private int boardSize;
@@ -16,6 +18,8 @@ public class TreasureHuntGame extends JFrame {
     private final String[] bombTypes = {"Simple", "Double", "Cross", "Line"};
     private ImageIcon explosionIcon;
     private ImageIcon treasureIcon;
+
+    private static boolean win = false;
 
     public TreasureHuntGame() {
         setTitle("Treasure Hunt Game");
@@ -125,10 +129,11 @@ public class TreasureHuntGame extends JFrame {
         remainingBombs--;
         if (foundTreasures == 4) {
             JOptionPane.showMessageDialog(this, "¡Has encontrado el tesoro! ¡Ganaste!");
-            resetGame();
+            win = true;
+            //resetGame();
         } else if (remainingBombs <= 0) {
             JOptionPane.showMessageDialog(this, "¡Te quedaste sin bombas! ¡Perdiste!");
-            resetGame();
+            //resetGame();
         }
     }
 
@@ -176,7 +181,13 @@ public class TreasureHuntGame extends JFrame {
         }
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(TreasureHuntGame::new);
+    public void play(PlayerData player) {
+        TreasureHuntGame game = new TreasureHuntGame();
+
+        if (win){
+            player.changeInteract();
+        }
+
+        game.setVisible(false);
     }
 }

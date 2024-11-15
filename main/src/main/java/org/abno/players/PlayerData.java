@@ -15,6 +15,7 @@ public class PlayerData {
     boolean rollDiceAgain = false;
     int offset;
     boolean restart;
+    boolean interactWin = false;
 
     public PlayerData(PrintWriter writer, BufferedReader reader,Token token) {
         this.writer = writer;
@@ -71,6 +72,10 @@ public class PlayerData {
     }
     public boolean isReady() {
         return ready;
+    }
+
+    public void changeInteract(){
+        this.interactWin = !interactWin;
     }
 
 }

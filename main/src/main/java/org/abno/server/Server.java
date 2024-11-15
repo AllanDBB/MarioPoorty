@@ -354,10 +354,8 @@ public class Server {
 
             int actualTile = clientData.get(playerId).getToken().getTile().getId();
             clientData.get(playerId).getToken().setTile(board.getTiles().get(actualTile+spaces));
-
-            out.println("Step 2");
             PlayerData data = clientData.get(playerId);
-            out.println("Step 3");
+
             for (Tile t : board.getTiles()){
                 if (t.getId() == clientData.get(playerId).getToken().getTile().getId()){
                     if (clientData.get(playerId).getToken().getTile().getClass() == IceFlower.class || clientData.get(playerId).getToken().getTile().getClass() == FireFlower.class){
@@ -380,7 +378,8 @@ public class Server {
                     }
                     else{
                     out.println("Entraste a una casilla WUJUU! " + t.getClass());
-                    t.interact(data);}
+                    t.interact(data);
+                    }
                 }
 
             }
