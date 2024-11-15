@@ -128,8 +128,8 @@ public class PregameFrame extends JFrame {
     }
 
     private void rollDice() {
-        Client.sendValue("@Roll");
         Dices dices = new Dices();
+
         dices.roll();
         int finalFace1 = dices.getDice1();
         int finalFace2 = dices.getDice2();
