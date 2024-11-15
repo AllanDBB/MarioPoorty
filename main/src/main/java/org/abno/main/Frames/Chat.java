@@ -120,6 +120,11 @@ public class Chat extends JPanel {
         if (!message.isEmpty()) {
             chatLog.append(String.format("%s %s%n", user, message));
             chatLog.setCaretPosition(chatLog.getDocument().getLength());
+
+            // Check if message is "GameStart"
+            if (message.equals("GameStart")) {
+                PregameFrame.StartFlag();
+            }
         }
     }
 }
