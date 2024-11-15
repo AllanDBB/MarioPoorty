@@ -14,6 +14,7 @@ import org.abno.board.EvilTiles.Tail;
 import org.abno.board.SpecialTile;
 import org.abno.board.Tile;
 import org.abno.games.Game;
+import org.abno.games.JuegoCartas;
 import org.abno.players.PlayerData;
 import org.abno.players.Token;
 import org.abno.players.Dices;
@@ -29,6 +30,8 @@ public class Server {
     private static final int MAX_PLAYERS = 6;
     private static Map<String, PlayerData> clientData = new HashMap<>();
     private static int activePlayers = 0;
+
+    private static JuegoCartas juegoCartas;
 
     // Tokens
     private static Set<Token> availableTokens = new HashSet<>();
@@ -326,17 +329,18 @@ public class Server {
 
                 Server.sendToAll(rollMessage);
 
+                if (clientData.get(playerId).getToken().getTile().getId()+total > 38){
+                    int dif = clientData.get(playerId).getToken().getTile().getId()+total -38;
+                    clientData.get(playerId).getToken().setTile(board.getTiles().get(38-dif));
+                }
+
                 if (clientData.get(playerId).getToken().getTile().getId()+total == 38){
                     gameEnded = true;
 
                     sendToAll("FIN YA GANARON");
                     gameStarted = false;
                     return;
-                } else if (clientData.get(playerId).getToken().getTile().getId()+total > 38){
-                    int dif = clientData.get(playerId).getToken().getTile().getId()+total -38;
-                    clientData.get(playerId).getToken().setTile(board.getTiles().get(38-dif));
-                }
-                else{
+                } else{
                     handleMove(playerId, total);
                     sendToClient(playerId, String.valueOf(data.getToken().getTile().getId())+" es el cuadro actual ");
 
@@ -351,6 +355,7 @@ public class Server {
                         } else if (data.getToken().getTile().getId()+data.getOffset()>38){
                             int dif = data.getToken().getTile().getId()+data.getOffset()-38;
                             data.getToken().setTile(board.getTiles().get(38-dif));
+                            System.out.println("Actual " + data.getToken().getTile().getId());
                         }
                         else if (data.getToken().getTile().getId()+data.getOffset()<=0){
                             data.getToken().setTile(board.getTiles().get(0));
@@ -402,7 +407,34 @@ public class Server {
                     }
                     else{
                     out.println("Entraste a una casilla WUJUU! " + t.getClass());
-                    t.interact(data);
+
+                        if (board.getTiles().get(data.getToken().getTile().getId()).getClass() == SpecialTile.class){
+                            SpecialTile specialTile = (SpecialTile) board.getTiles().get(data.getToken().getTile().getId());
+                            Game game = specialTile.getGame();
+
+                            if (game instanceof JuegoCartas){
+                                List<String> playerNames = new ArrayList<>(clientData.keySet());
+                                List<PlayerData> playerDataList = new ArrayList<>(clientData.values());
+
+                                JuegoCartas g = (JuegoCartas) game;
+                                String winner = g.playCards(playerNames);
+
+                                for (String p : playersQueue) {
+                                    ClientHandler.sendToClient(p, "Ganador: "+ winner);
+                                }
+
+                                if (winner == playerId){
+                                    clientData.get(playerId).setInteractWin(true);
+                                } else{
+                                    clientData.get(playerId).setInteractWin(false);
+                                }
+
+                            }
+
+                            else{
+                                t.interact(data);}
+                        }
+
 
                     if (board.getTiles().get(data.getToken().getTile().getId()).getClass() == SpecialTile.class){
                         SpecialTile g = (SpecialTile) board.getTiles().get(data.getToken().getTile().getId());

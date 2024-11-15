@@ -7,12 +7,16 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
-public class JuegoCartas extends JFrame {
+public class JuegoCartas extends JFrame implements Game {
     private List<Carta> mazo;
     private List<Jugador> jugadores;
     private JPanel panelCartas;
     private JLabel lblGanador;
+    private Timer timer;
+    private int indiceCarta = 0;
+    private Jugador ganador;
 
     public JuegoCartas() {
         setTitle("Juego de Cartas");
@@ -20,29 +24,109 @@ public class JuegoCartas extends JFrame {
         setSize(600, 400);
         setLayout(new BorderLayout());
 
-        jugadores = new ArrayList<>();
-        jugadores.add(new Jugador("Jugador 1"));
-        jugadores.add(new Jugador("Jugador 2"));
-
-        inicializarMazo();
-
         panelCartas = new JPanel();
-        panelCartas.setLayout(new GridLayout(1, jugadores.size()));
-        lblGanador = new JLabel("Seleccione una carta para cada jugador", JLabel.CENTER);
-
-        for (Jugador jugador : jugadores) {
-            JButton btnSeleccionarCarta = new JButton(jugador.getNombre());
-            btnSeleccionarCarta.addActionListener(e -> seleccionarCarta(jugador, btnSeleccionarCarta));
-            panelCartas.add(btnSeleccionarCarta);
-        }
-
-        JButton btnVerGanador = new JButton("Ver Ganador");
-        btnVerGanador.addActionListener(e -> determinarGanador());
+        panelCartas.setLayout(new GridLayout(1, 1));  // Ajustar dinámicamente según la cantidad de jugadores
+        lblGanador = new JLabel("Esperando cartas...", JLabel.CENTER);
 
         add(panelCartas, BorderLayout.CENTER);
         add(lblGanador, BorderLayout.NORTH);
-        add(btnVerGanador, BorderLayout.SOUTH);
     }
+
+    // Método para reiniciar el estado del juego
+    private void resetGame() {
+        // Reiniciar las variables
+        mazo = null;
+        jugadores = null;
+        indiceCarta = 0;
+        ganador = null;
+
+        // Limpiar el panel de cartas y restablecer el mensaje del ganador
+        panelCartas.removeAll();
+        panelCartas.revalidate();
+        panelCartas.repaint();
+
+        lblGanador.setText("Esperando cartas...");
+    }
+
+    // Método que inicializa el juego y retorna el nombre del ganador
+
+    public String playCards(List<String> players) {
+        resetGame();
+        setVisible(true);
+
+        // Inicializar jugadores y mazo
+        jugadores = new ArrayList<>();
+        for (String nombre : players) {
+            jugadores.add(new Jugador(nombre));
+        }
+        inicializarMazo();
+
+        panelCartas.setLayout(new GridLayout(1, jugadores.size()));
+
+        // Crear botones para los jugadores
+        for (Jugador jugador : jugadores) {
+            JButton btnCarta = new JButton(jugador.getNombre() + ": Esperando...");
+            btnCarta.setEnabled(false);
+            panelCartas.add(btnCarta);
+        }
+
+        // CountDownLatch para sincronizar con el SwingWorker
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        // Worker para manejar el juego
+        SwingWorker<Void, Void> worker = new SwingWorker<>() {
+            @Override
+            protected Void doInBackground() {
+                // Iniciar el Timer
+                timer = new Timer(2000, new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (indiceCarta < jugadores.size() && !mazo.isEmpty()) {
+                            Carta carta = mazo.remove(0);
+                            jugadores.get(indiceCarta).seleccionarCarta(carta);
+
+                            JButton btnCarta = (JButton) panelCartas.getComponent(indiceCarta);
+                            btnCarta.setText(jugadores.get(indiceCarta).getNombre() + ": " +
+                                    carta.getValor() + " " + carta.getEmoji());
+                            btnCarta.setEnabled(false);
+
+                            indiceCarta++;
+
+                            if (indiceCarta >= jugadores.size()) {
+                                timer.stop();
+                                determinarGanador();
+
+                                // Liberar el CountDownLatch para notificar al hilo principal
+                                latch.countDown();
+                            }
+                        }
+                    }
+                });
+                timer.start();
+
+                // Esperar hasta que el juego termine
+                try {
+                    latch.await();
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+                return null;
+            }
+        };
+
+        worker.execute();
+
+        // Esperar hasta que el juego termine y se determine el ganador
+        try {
+            latch.await();
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
+
+        // Retornar el nombre del ganador
+        return ganador != null ? ganador.getNombre() : "No hay ganador";
+    }
+
 
     private void inicializarMazo() {
         mazo = new ArrayList<>();
@@ -50,6 +134,7 @@ public class JuegoCartas extends JFrame {
         String[] palos = {"corazones", "tréboles", "picas", "rombos"};
         String[] emojis = {"❤️", "♣️", "♠️", "♦️"};
 
+        // Inicializar el mazo con las cartas
         for (int i = 0; i < palos.length; i++) {
             String emoji = emojis[i];
             for (String valor : valores) {
@@ -59,32 +144,30 @@ public class JuegoCartas extends JFrame {
         Collections.shuffle(mazo);
     }
 
-    private void seleccionarCarta(Jugador jugador, JButton boton) {
-        if (!mazo.isEmpty()) {
-            Carta cartaSeleccionada = mazo.remove(0);
-            jugador.seleccionarCarta(cartaSeleccionada);
-            boton.setText(cartaSeleccionada.getValor() + " " + cartaSeleccionada.getEmoji());
-        } else {
-            JOptionPane.showMessageDialog(this, "No quedan cartas en el mazo.");
-        }
-    }
-
     private void determinarGanador() {
-        Jugador ganador = jugadores.get(0);
+        ganador = jugadores.get(0);
 
         for (Jugador jugador : jugadores) {
             Carta carta = jugador.getCartaSeleccionada();
             Carta cartaGanador = ganador.getCartaSeleccionada();
+
             if (carta.obtenerValorNumerico() > cartaGanador.obtenerValorNumerico() ||
                     (carta.obtenerValorNumerico() == cartaGanador.obtenerValorNumerico() &&
                             carta.obtenerPrioridadPalo() > cartaGanador.obtenerPrioridadPalo())) {
+
                 ganador = jugador;
             }
         }
+        lblGanador.setText(ganador.getNombre() + " ganó con " +
+                ganador.getCartaSeleccionada().getValor() + " " +
+                ganador.getCartaSeleccionada().getEmoji() + "!");
 
-        lblGanador.setText("El ganador es " + ganador.getNombre() + " con la carta " +
-                ganador.getCartaSeleccionada().getValor() + " " + ganador.getCartaSeleccionada().getEmoji());
+        // Retrasar el cierre
+        Timer cerrarTimer = new Timer(3000, e -> dispose());
+        cerrarTimer.setRepeats(false);
+        cerrarTimer.start();
     }
+
 
     private class Carta {
         private String valor;
@@ -158,12 +241,5 @@ public class JuegoCartas extends JFrame {
         public String getNombre() {
             return nombre;
         }
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            JuegoCartas juego = new JuegoCartas();
-            juego.setVisible(true);
-        });
     }
 }
