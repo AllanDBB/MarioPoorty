@@ -284,4 +284,5 @@ class ImagePanel extends JPanel {
         // Scale the image to fit the panel
         g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
     }
+
 }

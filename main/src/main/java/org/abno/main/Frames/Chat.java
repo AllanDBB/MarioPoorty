@@ -10,7 +10,6 @@ import java.awt.event.ActionListener;
 public class Chat extends JPanel {
 
     private JTextArea chatLog;
-    private String currentUser;
     private static final Color CHAT_BACKGROUND_COLOR = new Color(30, 14, 60);
     private static final Color TEXT_COLOR = Color.WHITE;
     private static final Font CHAT_FONT = new Font("Arial", Font.PLAIN, 16);
@@ -19,8 +18,6 @@ public class Chat extends JPanel {
     private static final Dimension CHAT_INPUT_SIZE = new Dimension(1092, 50);
 
     public Chat(String selectedId) {
-        this.currentUser = selectedId;
-
         setUpMainPanel();
         add(setUpChatLogPanel(), BorderLayout.NORTH);
         add(setUpChatInputPanel(), BorderLayout.SOUTH);
@@ -99,6 +96,7 @@ public class Chat extends JPanel {
     public void externMessage(String message, String user){
         if (!message.isEmpty()){
             chatLog.append(String.format("%s %s%n", user, message));
+            chatLog.setCaretPosition(chatLog.getDocument().getLength());
         }
     }
 
