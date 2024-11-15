@@ -14,6 +14,7 @@ public class PregameFrame extends JFrame {
     private static final Color TEXT_COLOR = Color.WHITE;
     private static final Dimension IMAGE_SIZE = new Dimension(300, 300);
     private boolean isReady = false;
+    private static boolean GameStart = false;
 
     // Add Dice panel
     private Dice dicePanel;
@@ -115,6 +116,10 @@ public class PregameFrame extends JFrame {
 
         mainPanel.add(chatWrapper, gbc);
 
+
+        Timer timer = new Timer(100, e -> startGame());
+        timer.start();
+
         setVisible(true);
     }
 
@@ -149,6 +154,19 @@ public class PregameFrame extends JFrame {
         });
 
         return readyButton;
+    }
+
+    public static void StartFlag(){
+        GameStart = true;
+    }
+
+    private void startGame() {
+        if (GameStart) {
+            new MainGame();
+            PregameFrame.this.setVisible(false);
+            dispose();
+            GameStart=false;
+        }
     }
 
     static class ImagePanel extends JPanel {
