@@ -32,8 +32,6 @@ public class LobbyFrame extends JFrame {
     private String selectedId;
     private ImagePanel imagePanel;
 
-
-
     public LobbyFrame() {
         configureFrame();
 

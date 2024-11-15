@@ -15,6 +15,8 @@ public class PregameFrame extends JFrame {
     private static final Dimension IMAGE_SIZE = new Dimension(300, 300);
     private boolean isReady = false;
     private static boolean GameStart = false;
+    private static String Id;
+    private static String Token;
 
     // Add Dice panel
     private Dice dicePanel;
@@ -116,6 +118,8 @@ public class PregameFrame extends JFrame {
 
         mainPanel.add(chatWrapper, gbc);
 
+        Id = selectedId;
+        Token = selectedToken;
 
         Timer timer = new Timer(100, e -> startGame());
         timer.start();
@@ -162,10 +166,13 @@ public class PregameFrame extends JFrame {
 
     private void startGame() {
         if (GameStart) {
-            new MainGame();
+            SwingUtilities.invokeLater(() -> {
+            Client.setChatLog(new Chat(Id));
+            new MainGame(Client.getChat(),Id,Token);
             PregameFrame.this.setVisible(false);
             dispose();
             GameStart=false;
+            });
         }
     }
 
