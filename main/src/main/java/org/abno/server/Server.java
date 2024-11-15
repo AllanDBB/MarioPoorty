@@ -3,6 +3,7 @@ package org.abno.server;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -56,10 +57,12 @@ public class Server {
         return Collections.unmodifiableSet(availableTokens);
     }
 
-
+    public static List<String> getPlayersQueue(){
+        return playersQueue;
+    }
     // Game
     private static boolean gameStarted = false;
-    private static List<String> playersQueue = new ArrayList<>();
+    private static List<String> playersQueue = new CopyOnWriteArrayList<>();
     private static int currentPlayerIndex = 0;
     private static Board board = new Board();
     private static boolean gameEnded = false;
@@ -167,6 +170,8 @@ public class Server {
             this.socket = socket;
         }
 
+
+
         @Override
         public void run() {
             try {
@@ -267,7 +272,8 @@ public class Server {
             PlayerData recipientData = clientData.get(playerReady);
             if(recipientData != null) {
                 recipientData.setReady();
-                playersQueue.add(playerReady);
+                Server.playersQueue.add(playerReady);
+                System.out.println("Tamano :" + playersQueue.size());
                 Server.sendToAll("Player " + playerReady + " is ready to start.");
                 Server.startGame();
             } else {
