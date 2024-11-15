@@ -1,6 +1,7 @@
 package org.abno.board;
 
 import org.abno.board.EvilTiles.*;
+import org.abno.games.*;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -28,6 +29,7 @@ public class Board {
             String imgRoute = "path/to/special_tile_image_" + id + ".png";
             tiles.add(new SpecialTile(id, imgRoute));
         }
+
 
         /*for (int i = 0; i < 10; i++) {
             int id = i + 19;
