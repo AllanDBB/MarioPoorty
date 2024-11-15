@@ -1,12 +1,16 @@
 package org.abno.main.Frames;
 
 import org.abno.players.Token;
+import org.abno.server.Client;
 import org.abno.server.Server;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.nio.file.Paths;
 import java.util.Set;
 
@@ -27,6 +31,8 @@ public class LobbyFrame extends JFrame {
     private String selectedToken;
     private String selectedId;
     private ImagePanel imagePanel;
+
+
 
     public LobbyFrame() {
         configureFrame();
@@ -50,6 +56,7 @@ public class LobbyFrame extends JFrame {
 
         add(mainPanel);
         setVisible(true);
+
     }
 
     private void configureFrame() {
@@ -149,7 +156,6 @@ public class LobbyFrame extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 selectedToken = token.getName(); // Save the clicked token to the selectedToken variable
-                System.out.println("Selected token: " + selectedToken); // Print the selected token
                 imagePanel.setImage(token.getImg()); // Update the image panel
             }
         });
@@ -233,9 +239,9 @@ public class LobbyFrame extends JFrame {
                 startButton.setBackground(Color.GREEN);
                 startButton.setEnabled(false);
                 selectedId = textField.getText();
-                System.out.println("Selected ID: " + selectedId);
-                System.out.println("Selected Token: " + selectedToken);
 
+                Client.sendValue(selectedId);
+                Client.sendValue(selectedToken);
                 // Switching to PregameFrame
                 SwingUtilities.invokeLater(() -> {
                     new PregameFrame();
@@ -252,12 +258,6 @@ public class LobbyFrame extends JFrame {
         return new ImagePanel("Banner.jpg", size);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            LobbyFrame frame = new LobbyFrame();
-            frame.setVisible(true);
-        });
-    }
 }
 
 class ImagePanel extends JPanel {

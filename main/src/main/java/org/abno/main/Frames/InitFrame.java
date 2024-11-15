@@ -4,6 +4,10 @@ import javax.swing.*;
 import java.awt.*;
 import org.abno.server.Server;
 
+import java.io.PrintWriter;
+import java.io.BufferedReader;
+import java.net.Socket;
+
 public class InitFrame extends JFrame {
 
     // Constants
@@ -15,11 +19,13 @@ public class InitFrame extends JFrame {
     private static final Dimension BUTTON_SIZE = new Dimension(400, 150); // Button preferred size
     private static final int BUTTON_RADIUS = 30; // Button radius
 
+
     public InitFrame() {
         configureFrame();
         JLayeredPane layeredPane = createLayeredPane();
         add(layeredPane);
         setVisible(true);
+
     }
 
     private void configureFrame() {
