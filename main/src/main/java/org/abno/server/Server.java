@@ -8,7 +8,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.abno.board.EvilTiles.FireFlower;
+import org.abno.board.EvilTiles.IceFlower;
 import org.abno.board.EvilTiles.Jail;
+import org.abno.board.EvilTiles.Tail;
 import org.abno.board.Tile;
 import org.abno.players.PlayerData;
 import org.abno.players.Token;
@@ -241,7 +243,7 @@ public class Server {
             }
         }
 
-        private void processMessage(String senderId, String message) {
+        private void processMessage(String senderId, String message) throws IOException {
 
             if (message.equals("@Ready")){
                 getReady(senderId);
@@ -291,28 +293,23 @@ public class Server {
             }
         }
 
-        private void handleRoll(String playerId){
+        private void handleRoll(String playerId) throws IOException {
             if (Server.playersQueue.get(Server.currentPlayerIndex).equals(playerId)){
                 PlayerData data = clientData.get(clientId);
                 if (data.getLostTurns() > 0){
                     data.setLostTurns(data.getLostTurns()-1);
+                    sendToClient(playerId, String.valueOf(data.getLostTurns())+" turnos restantes sin jugar");
+                    endTurn();
                     return;
                 }
                 if (data.isRestart()){
-                    getTokenByName(playerId).setTile(board.getTiles().get(0));
+                    data.getToken().setTile(board.getTiles().get(0));
+                    data.setRestart(false);
+                    sendToClient(playerId, " de vuelta al inicio");
+                    endTurn();
                     return;
                 }
-                if (data.getOffset()>0){
-                    if (getTokenByName(playerId).getTile().getId()+data.getOffset()>=38){
-                        gameEnded = true;
-                    } else if (getTokenByName(playerId).getTile().getId()+data.getOffset()<=0){
-                        getTokenByName(playerId).setTile(board.getTiles().get(0));
-                    }
-                    else{
-                        handleMove(playerId, data.getOffset());
-                        data.setOffset(0);
-                    }
-                }
+
 
 
                 Dices dices = new Dices();
@@ -327,33 +324,70 @@ public class Server {
 
                 Server.sendToAll(rollMessage);
 
-                if (clientData.get(playerId).getToken().getTile().getId() >= 38){
+                if (clientData.get(playerId).getToken().getTile().getId()+total >= 38){
                     gameEnded = true;
+
+                    sendToAll("FIN YA GANARON");
+                    gameStarted = false;
+                    return;
                 } else{
                     handleMove(playerId, total);
+                    sendToClient(playerId, String.valueOf(data.getToken().getTile().getId())+" es el cuadro actual ");
 
                     if (data.isRollDiceAgain()){
                         handleRoll(playerId);
+                    }
+
+                    if (data.getOffset()>0){
+                        if (data.getToken().getTile().getId()+data.getOffset()>=38){
+                            gameEnded = true;
+                        } else if (data.getToken().getTile().getId()+data.getOffset()<=0){
+                            data.getToken().setTile(board.getTiles().get(0));
+                            endTurn();
+                        }
+                        else{
+                            handleMove(playerId, data.getOffset());
+                            sendToClient(playerId, String.valueOf(data.getToken().getTile().getId())+" es el cuadro actual ");
+                            data.setOffset(0);
+                        }
                     }
                 }
                 sendToClient(playerId, "You rolled a " + total + ". Complete your turn with @EndTurn when done.");
             }
         }
 
-        private void handleMove(String playerId, int spaces){
+        private void handleMove(String playerId, int spaces) throws IOException {
 
             int actualTile = clientData.get(playerId).getToken().getTile().getId();
-            clientData.get(playerId).getToken().getTile().setId(actualTile + spaces);
+            clientData.get(playerId).getToken().setTile(board.getTiles().get(actualTile+spaces));
+            PlayerData data = clientData.get(playerId);
 
-            out.println("Step 2");
-            PlayerData data = clientData.get(clientId);
-            out.println("Step 3");
             for (Tile t : board.getTiles()){
                 if (t.getId() == clientData.get(playerId).getToken().getTile().getId()){
+                    if (clientData.get(playerId).getToken().getTile().getClass() == IceFlower.class || clientData.get(playerId).getToken().getTile().getClass() == FireFlower.class){
+                        out.println("Escoja a quien atacar");
+                        out.println(playersQueue.toArray().toString());
+                        String p = in.readLine();
+                        for (String player: playersQueue){
+                            out.println(player);
+                            out.println(p);
+                            if (Objects.equals(p, player)){
+                                out.println("encontrado");
+                                t.interact(clientData.get(player));
+                                out.println(clientData.get(player).getToken().getTile().getId());
+                                break;
+                            }                        }
+                    } else if (clientData.get(playerId).getToken().getTile().getClass() == Tail.class){
+                        out.println("Escoja cuánto moverse (-3 a +3)");
+                        String p = in.readLine();
+                        ((Tail) t).jump(clientData.get(playerId), Integer.parseInt(p));
+                    }
+                    else{
                     out.println("Entraste a una casilla WUJUU! " + t.getClass());
                     t.interact(data);
+                    }
                 }
-                out.println(t.getClass());
+
             }
         }
 
