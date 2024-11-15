@@ -151,12 +151,7 @@ public class GuessTheCharacterGame extends JFrame implements Game {
         GuessTheCharacterGame game = new GuessTheCharacterGame();
 
         game.initialize(player);
-        
-        if (won()) {
-            player.setInteractWin(true);
-        } else {
-            player.setInteractWin(false);
-        }
+
 
 
     }

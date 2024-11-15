@@ -406,10 +406,8 @@ public class Server {
                     if (board.getTiles().get(data.getToken().getTile().getId()).getClass() == SpecialTile.class){
                         SpecialTile g = (SpecialTile) board.getTiles().get(data.getToken().getTile().getId());
                         if (g.getGame().won()){
-                            System.out.println("si");
                             data.setInteractWin(true);
                         } else{
-                            System.out.println("no");
                             data.setInteractWin(false);
                         }
                     }

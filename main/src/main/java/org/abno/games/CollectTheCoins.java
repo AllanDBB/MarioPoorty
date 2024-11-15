@@ -21,6 +21,7 @@ public class CollectTheCoins extends JFrame implements Game{
     private Image goodCoinImage;
     private Image badCoinImage;
     private Image unknownCoinImage;
+    private JLabel scoreLabel;
     private boolean win;
 
     public CollectTheCoins() {
@@ -30,6 +31,9 @@ public class CollectTheCoins extends JFrame implements Game{
         gridButtons = new JButton[GRID_SIZE][GRID_SIZE];
         coinValues = new int[GRID_SIZE][GRID_SIZE];
 
+    }
+
+    private void initialize(PlayerData player){
         try {
 
             goodCoinImage = ImageIO.read(new File("main/src/main/java/utils/coin.png")).getScaledInstance(20, 20, Image.SCALE_SMOOTH);
@@ -48,7 +52,7 @@ public class CollectTheCoins extends JFrame implements Game{
 
         JPanel infoPanel = new JPanel();
         JLabel timerLabel = new JLabel("Time left: " + timeLeft + "s");
-        JLabel scoreLabel = new JLabel("Score: ?");
+        scoreLabel = new JLabel("Score: 0");
         infoPanel.add(timerLabel);
         infoPanel.add(scoreLabel);
 
@@ -60,7 +64,7 @@ public class CollectTheCoins extends JFrame implements Game{
             timerLabel.setText("Time left: " + timeLeft + "s");
             if (timeLeft <= 0) {
                 timer.stop();
-                checkWin(scoreLabel);
+                checkWin(scoreLabel, player);
             }
         });
         timer.start();
@@ -69,7 +73,6 @@ public class CollectTheCoins extends JFrame implements Game{
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
     }
-
     private void initializeGrid(JPanel gridPanel) {
         Random rand = new Random();
         int halfCells = TOTAL_CELLS / 2;
@@ -80,26 +83,31 @@ public class CollectTheCoins extends JFrame implements Game{
                 button.setPreferredSize(new Dimension(20, 20));
                 gridButtons[i][j] = button;
 
-
-                int coinValue = rand.nextInt(10) + 1;
-                coinValue *= (halfCells-- > 0) ? 1 : -1;
+                // Asignar valores a las monedas (positivos y negativos)
+                int coinValue = rand.nextInt(10) + 1; // Valor entre 1 y 10
+                coinValue *= (halfCells-- > 0) ? 1 : -1; // Mitad positivas, mitad negativas
                 coinValues[i][j] = coinValue;
 
-
+                // Inicializar con la imagen desconocida
                 button.setIcon(new ImageIcon(unknownCoinImage));
-
 
                 int finalI = i;
                 int finalJ = j;
-                button.addActionListener(e -> {
 
-                    score += coinValues[finalI][finalJ];
-                    button.setEnabled(false);
+                // Acción al hacer clic en un botón
+                button.addActionListener(e -> {
+                    score += coinValues[finalI][finalJ]; // Actualizar el puntaje
+                    button.setEnabled(false); // Desactivar el botón después de hacer clic
+
+                    // Cambiar la imagen según el valor
                     if (coinValues[finalI][finalJ] > 0) {
                         button.setIcon(new ImageIcon(goodCoinImage));
                     } else {
                         button.setIcon(new ImageIcon(badCoinImage));
                     }
+
+                    // Actualizar el puntaje en tiempo real
+                    scoreLabel.setText("Score: " + score);
                 });
 
                 gridPanel.add(button);
@@ -107,22 +115,34 @@ public class CollectTheCoins extends JFrame implements Game{
         }
     }
 
-    private void checkWin(JLabel scoreLabel) {
+
+    private void checkWin(JLabel scoreLabel, PlayerData player) {
         scoreLabel.setText("Final Score: " + score);
-        String message = score > 0 ? "Congratulations, you won!" : "Sorry, you lost!";
+        String message = score > 0
+                ? "Congratulations, you won with a score of " + score + "!"
+                : "Sorry, you lost with a score of " + score + ".";
         JOptionPane.showMessageDialog(this, message);
-        if (score>0){
-            win = true;
+
+        win = score > 0; // Determinar si se gana según el puntaje final
+        if (win) {
+            player.setInteractWin(true);
+        } else {
+            player.setInteractWin(false);
         }
+        dispose();
     }
 
+    @Override
+    public boolean won() {
+        return win;
+    }
+
+    @Override
     public void play(PlayerData player) {
         CollectTheCoins game = new CollectTheCoins();
-        setVisible(true);
-        if (win){
-            player.changeInteract();
-        }
+        game.initialize(player);
+        game.setVisible(true);
 
-        game.setVisible(false);
     }
+
 }

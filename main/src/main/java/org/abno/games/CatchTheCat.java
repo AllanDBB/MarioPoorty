@@ -9,7 +9,7 @@ import java.awt.event.ActionListener;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class CatchTheCat extends JFrame implements Game{
+public class CatchTheCat extends JFrame implements Game {
     private final int size = 11;
     private final JButton[][] grid = new JButton[size][size];
     private final boolean[][] blocked = new boolean[size][size];
@@ -17,23 +17,20 @@ public class CatchTheCat extends JFrame implements Game{
     private int catCol = size / 2;
     private boolean win = false;
 
+    // Constructor sin inicialización del tablero
     public CatchTheCat() {
         setTitle("Catch the Cat");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(600, 600);
         setLayout(new GridLayout(size, size));
-
-        initializeBoard();
-
     }
 
-
-    private void initializeBoard() {
+    // Inicializa el tablero cada vez que se llama a play
+    private void initializeBoard(PlayerData player) {
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 JButton button = new JButton();
                 button.setBackground(Color.LIGHT_GRAY);
-
 
                 if (i == catRow && j == catCol) {
                     button.setBackground(Color.ORANGE);
@@ -47,7 +44,7 @@ public class CatchTheCat extends JFrame implements Game{
                         if (!blocked[row][col] && (row != catRow || col != catCol)) {
                             button.setBackground(Color.DARK_GRAY);
                             blocked[row][col] = true;
-                            moveCat();
+                            moveCat(player);
                         }
                     }
                 });
@@ -57,87 +54,49 @@ public class CatchTheCat extends JFrame implements Game{
         }
     }
 
-    private void moveCat() {
-        int[] dirRow = {-1, 1, 0, 0, -1, 1};
-        int[] dirCol = {0, 0, -1, 1, -1, 1};
+    private void moveCat(PlayerData player) {
+        int[] dirRow = {-1, 1, 0, 0}; // Arriba, Abajo, Izquierda, Derecha
+        int[] dirCol = {0, 0, -1, 1}; // Arriba, Abajo, Izquierda, Derecha
 
+        boolean moved = false;
 
-        if (isAtEdge(catRow, catCol)) {
-            JOptionPane.showMessageDialog(this, "¡El gato escapó! Has perdido.");
-            resetGame();
-            return;
-        }
+        for (int d = 0; d < 4; d++) {
+            int newRow = catRow + dirRow[d];
+            int newCol = catCol + dirCol[d];
 
-        boolean[][] visited = new boolean[size][size];
-        Queue<int[]> queue = new LinkedList<>();
-        queue.add(new int[]{catRow, catCol});
-        visited[catRow][catCol] = true;
-
-        boolean foundPathToEdge = false;
-
-
-        while (!queue.isEmpty()) {
-            int[] pos = queue.poll();
-            int row = pos[0];
-            int col = pos[1];
-
-            // Verificar si el gato llega a un borde
-            if (isAtEdge(row, col)) {
-                foundPathToEdge = true;
+            if (isInsideGrid(newRow, newCol) && !blocked[newRow][newCol]) {
+                catRow = newRow;
+                catCol = newCol;
+                moved = true;
                 break;
             }
-
-            // Explorar movimientos posibles
-            for (int d = 0; d < 6; d++) {
-                int newRow = row + dirRow[d];
-                int newCol = col + dirCol[d];
-
-                if (isInsideGrid(newRow, newCol) && !blocked[newRow][newCol] && !visited[newRow][newCol]) {
-                    visited[newRow][newCol] = true;
-                    queue.add(new int[]{newRow, newCol});
-                }
-            }
         }
 
-        if (foundPathToEdge) {
-
-            for (int d = 0; d < 6; d++) {
-                int newRow = catRow + dirRow[d];
-                int newCol = catCol + dirCol[d];
-
-                if (isInsideGrid(newRow, newCol) && !blocked[newRow][newCol]) {
-                    catRow = newRow;
-                    catCol = newCol;
-                    updateCatPosition();
-
-
-                    if (isAtEdge(catRow, catCol)) {
-                        JOptionPane.showMessageDialog(this, "¡El gato escapó! Has perdido.");
-                        resetGame();
-                    }
-                    return;
-                }
+        if (moved) {
+            updateCatPosition();
+            if (isAtEdge(catRow, catCol)) {
+                JOptionPane.showMessageDialog(this, "¡El gato escapó! Has perdido.");
+                win = false;
+                player.setInteractWin(false);
+                resetGame(player);
+                dispose();
             }
         } else {
-
-            JOptionPane.showMessageDialog(this, "¡Felicidades! Has atrapado al gato.");
+            JOptionPane.showMessageDialog(this, "¡Has ganado! El gato está atrapado.");
             win = true;
-            //resetGame();
+            player.setInteractWin(true);
+            resetGame(player);
+            dispose();
         }
     }
-
 
     private boolean isAtEdge(int row, int col) {
         return row == 0 || row == size - 1 || col == 0 || col == size - 1;
     }
 
-
-
-
     private boolean isInsideGrid(int row, int col) {
         return row >= 0 && row < size && col >= 0 && col < size;
     }
-
 
     private void updateCatPosition() {
         for (int i = 0; i < size; i++) {
@@ -151,27 +110,41 @@ public class CatchTheCat extends JFrame implements Game{
         }
     }
 
-
-    private void resetGame() {
+    private void resetGame(PlayerData player) {
         catRow = size / 2;
         catCol = size / 2;
+
+        getContentPane().removeAll(); // Elimina todos los botones actuales del tablero
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 blocked[i][j] = false;
-                grid[i][j].setBackground(Color.LIGHT_GRAY);
             }
         }
-        grid[catRow][catCol].setBackground(Color.ORANGE);
+
+        initializeBoard(player); // Inicializar el tablero
+        revalidate();
+        repaint();
     }
 
-    public void play(PlayerData player) {
-        CatchTheCat game = new CatchTheCat();
-        setVisible(true);
+    @Override
+    public boolean won() {
+        return win;
+    }
 
-        if (win){
-            player.changeInteract();
+    // Método para iniciar el juego, crea una nueva instancia del juego y muestra la ventana
+    public void play(PlayerData player) {
+        // Crear una nueva instancia del juego cada vez
+        CatchTheCat game = new CatchTheCat();
+        game.setVisible(true); // Mostrar la ventana del juego
+
+        game.resetGame(player); // Inicializar el tablero y comenzar el juego
+
+        // Si el jugador ha ganado, se actualiza su estado
+        if (win) {
+            player.setInteractWin(true);
         }
 
-        game.setVisible(false);
+        // Hacer invisible la ventana anterior (la ventana principal si es necesario)
+        setVisible(false);
     }
 }
