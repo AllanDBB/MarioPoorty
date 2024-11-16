@@ -88,6 +88,9 @@ public class Server {
         }
     }
 
+    public static boolean getGameStarted() {
+        return gameStarted;
+    }
 
     private static synchronized void startGame() {
         if (playersQueue.size() == activePlayers && !gameStarted && playersQueue.size() > 1) {
@@ -103,44 +106,31 @@ public class Server {
     }
 
     private static void determinePlayerOrder() {
-        Random random = new Random();
-        int option = random.nextInt(1) + 1; // 0 o 1
-    
-        if (option == 0) {
-            // Opción 1: Los jugadores eligen un número y se compara con un aleatorio
-            randomNumber randomNumberGenerator = new randomNumber();
-            Map<String, Integer> playerNumbers = new HashMap<>();
+        Map<String, Integer> diceResults = new HashMap<>();
 
-            // Pide a cada jugador que seleccione un número entre 1 y 1000
-            for (String playerId : playersQueue) {
-                PlayerData playerData = clientData.get(playerId);
-                playerData.getWriter().println("Please enter a number between 1 and 1000:");
-                try {
-                    int chosenNumber = Integer.parseInt(playerData.getReader().readLine());
-                    playerNumbers.put(playerId, chosenNumber);
-                } catch (IOException | NumberFormatException e) {
-                    playerNumbers.put(playerId, random.nextInt(1000) + 1); // Default en caso de error
-                }
+        for (String playerId : playersQueue) {
+            sendToAll("Your turn to roll the dice to decide who starts " + playerId + "!");
+
+            int dice1 = 0;
+            int dice2 = 0;
+            int sum = 0;
+
+            try {
+                dice1 = Integer.parseInt(clientData.get(playerId).getReader().readLine());
+                System.out.println(dice1);
+                dice2 = Integer.parseInt(clientData.get(playerId).getReader().readLine());
+                System.out.println(dice2);
+                sum = dice1 + dice2;
+            } catch (IOException e){
+                e.printStackTrace();
             }
 
-            // Determina el orden de juego usando `randomNumber`
-            playersQueue = randomNumberGenerator.determineOrder(playerNumbers);
-
-        } else {
-            // Opción 2: Cada jugador lanza 2 dados y se determina el orden según el valor total
-            Map<String, Integer> diceResults = new HashMap<>();
-
-            for (String playerId : playersQueue) {
-                Dices dices = new Dices();
-                dices.roll();
-                int total = dices.getTotal();
-                diceResults.put(playerId, total);
-                ClientHandler.sendToClient(playerId, "You rolled " + dices.getDice1() + " and " + dices.getDice2() + " (Total: " + total + ")");
-            }
-
-            // Ordena la lista de jugadores según el resultado de los dados
-            playersQueue.sort((p1, p2) -> Integer.compare(diceResults.get(p2), diceResults.get(p1)));
+            diceResults.put(playerId, sum);
+            sendToAll(playerId + " rolled " + dice1 + " and " + dice2 + " (Total: " + sum + ")");
         }
+
+        playersQueue.sort((p1, p2) -> Integer.compare(diceResults.get(p2), diceResults.get(p1)));
+
     }
 
     private static void gameLoop() {
@@ -369,7 +359,6 @@ public class Server {
                         }
                     }
                 }
-                sendToClient(playerId, "You rolled a " + total + ". Complete your turn with @EndTurn when done.");
             }
         }
 
@@ -450,6 +439,7 @@ public class Server {
 
             }
 
+            endTurn();
         }
 
         private void endTurn() {

@@ -2,6 +2,7 @@ package org.abno.main.Frames;
 
 import org.abno.players.Dices;
 import org.abno.server.Client;
+import org.abno.server.Server;
 
 import javax.swing.*;
 import java.awt.*;
@@ -99,7 +100,9 @@ public class Dice extends JPanel {
         JButton rollButton = new JButton("Roll Dice");
         rollButton.addActionListener(e -> {
             // Example: manually setting the final face indices for both dice
-            Client.sendValue("@Roll");
+
+            if (Server.getGameStarted()){Client.sendValue("@Roll");}
+            System.out.println(Server.getGameStarted());
             Dices dices = new Dices();
             dices.roll();
             int finalFace1= dices.getDice1();
