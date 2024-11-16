@@ -53,7 +53,7 @@ public class MemoryPath extends JFrame implements Game{
         Random rand = new Random();
         for (int i = 0; i < rows; i++) {
             correctPath[i] = rand.nextInt(cols);
-            System.out.println(i);
+            System.out.println(correctPath[i]);
         }
     }
 
@@ -111,6 +111,7 @@ public class MemoryPath extends JFrame implements Game{
                     JOptionPane.showMessageDialog(null, "¡Ganaste!");
                     win = true;
                     resetGame();
+                    dispose();
                 }
             } else {
 
@@ -145,5 +146,6 @@ public class MemoryPath extends JFrame implements Game{
 
         game.setVisible(false);
         resetGame();
+
     }
 }

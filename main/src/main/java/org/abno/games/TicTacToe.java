@@ -2,9 +2,12 @@ package org.abno.games;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Objects;
 import javax.swing.*;
 
-public class TicTacToe {
+import static java.lang.Thread.sleep;
+
+public class TicTacToe implements Game{
     int boardWidth = 600;
     int boardHeight = 650;
 
@@ -21,7 +24,11 @@ public class TicTacToe {
     boolean gameOver = false;
     int turns = 0;
 
-    TicTacToe() {
+    public TicTacToe() {
+
+    }
+
+    private void initialize(String p1, String p2){
         frame.setVisible(true);
         frame.setSize(boardWidth, boardHeight);
         frame.setLocationRelativeTo(null);
@@ -33,7 +40,7 @@ public class TicTacToe {
         textLabel.setForeground(Color.white);
         textLabel.setFont(new Font("Arial", Font.BOLD, 50));
         textLabel.setHorizontalAlignment(JLabel.CENTER);
-        textLabel.setText("Tic-Tac-Toe");
+        textLabel.setText(p1);
         textLabel.setOpaque(true);
 
         textPanel.setLayout(new BorderLayout());
@@ -58,15 +65,32 @@ public class TicTacToe {
 
                 tile.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        if (gameOver) return;
+                        if (gameOver) {
+                            frame.dispose();
+                            return;}
                         JButton tile = (JButton) e.getSource();
                         if (tile.getText() == "") {
                             tile.setText(currentPlayer);
                             turns++;
                             checkWinner();
                             if (!gameOver) {
+                                frame.setVisible(false);
+                                try {
+                                    sleep(100);
+                                } catch (InterruptedException ex) {
+                                    throw new RuntimeException(ex);
+                                }
+                                frame.setVisible(true);
+
+
+                                if (Objects.equals(textLabel.getText(), p1)){
+                                    textLabel.setText(p2);
+
+                                } else{
+                                    textLabel.setText(p1);
+                                }
                                 currentPlayer = currentPlayer == playerX ? playerO : playerX;
-                                textLabel.setText(currentPlayer + "'s turn.");
+                                //textLabel.setText(currentPlayer + "'s turn.");
                             }
                         }
 
@@ -140,12 +164,41 @@ public class TicTacToe {
     void setWinner(JButton tile) {
         tile.setForeground(Color.green);
         tile.setBackground(Color.gray);
-        textLabel.setText(currentPlayer + " is the winner!");
+
+        String t = textLabel.getText().split(" ")[0];
+        textLabel.setText( t + " is the winner!");
     }
 
     void setTie(JButton tile) {
         tile.setForeground(Color.orange);
         tile.setBackground(Color.gray);
         textLabel.setText("Tie!");
+    }
+
+    void resetGame(String p1, String p2) {
+        gameOver = false;
+        turns = 0;
+        currentPlayer = playerX;
+        textLabel.setText(p1);
+
+        for (int r = 0; r < 3; r++) {
+            for (int c = 0; c < 3; c++) {
+                board[r][c].setText("");
+                board[r][c].setBackground(Color.darkGray);
+                board[r][c].setForeground(Color.white);
+            }
+        }
+    }
+
+
+
+    public String playy(String p1, String p2){
+        TicTacToe ttt = new TicTacToe();
+        initialize(p1, p2);
+        resetGame(p1,p2);
+        ttt.textLabel.setText(p1);
+
+        System.out.println(textLabel.getText().split(" ")[0]);
+        return textLabel.getText().split(" ")[0];
     }
 }

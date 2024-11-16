@@ -31,24 +31,24 @@ public class Board {
             tiles.add(new SpecialTile(id, imgRoute));
         }*/
 
-        tiles.add(new SpecialTile(2, "SpecialTile.png", new CatchTheCat()));
-        tiles.add(new SpecialTile(5, "SpecialTile.png", new CatchTheCat()));
-        tiles.add(new SpecialTile(6, "SpecialTile.png", new CatchTheCat()));
-        tiles.add(new SpecialTile(7, "SpecialTile.png", new CatchTheCat()));
-        tiles.add(new SpecialTile(8, "SpecialTile.png", new CatchTheCat()));
-        tiles.add(new SpecialTile(10, "SpecialTile.png", new CatchTheCat()));
-        tiles.add(new SpecialTile(12,  "SpecialTile.png", new CatchTheCat()));
-        tiles.add(new SpecialTile(14, "SpecialTile.png", new CatchTheCat()));
-        tiles.add(new SpecialTile(16, "SpecialTile.png", new CatchTheCat()));
-        tiles.add(new SpecialTile(21, "SpecialTile.png", new CatchTheCat()));
-        tiles.add(new SpecialTile(27, "SpecialTile.png", new CatchTheCat()));
-        tiles.add(new SpecialTile(29, "SpecialTile.png", new CatchTheCat()));
-        tiles.add(new SpecialTile(32, "SpecialTile.png", new CatchTheCat()));
-        tiles.add(new SpecialTile(33, "SpecialTile.png", new CatchTheCat()));
-        tiles.add(new SpecialTile(34, "SpecialTile.png", new CatchTheCat()));
-        tiles.add(new SpecialTile(35, "SpecialTile.png", new CatchTheCat()));
-        tiles.add(new SpecialTile(36, "SpecialTile.png", new CatchTheCat()));
-        tiles.add(new SpecialTile(37, "SpecialTile.png", new CatchTheCat()));
+        tiles.add(new SpecialTile(2, "SpecialTile.png", new MemoryGame()));
+        tiles.add(new SpecialTile(5, "SpecialTile.png", new MemoryGame()));
+        tiles.add(new SpecialTile(6, "SpecialTile.png", new TreasureHuntGame()));
+        tiles.add(new SpecialTile(7, "SpecialTile.png", new MemoryGame()));
+        tiles.add(new SpecialTile(8, "SpecialTile.png", new MemoryGame()));
+        tiles.add(new SpecialTile(10, "SpecialTile.png", new MemoryGame()));
+        tiles.add(new SpecialTile(12,  "SpecialTile.png", new TreasureHuntGame()));
+        tiles.add(new SpecialTile(14, "SpecialTile.png", new TreasureHuntGame()));
+        tiles.add(new SpecialTile(16, "SpecialTile.png", new TreasureHuntGame()));
+        tiles.add(new SpecialTile(21, "SpecialTile.png", new TreasureHuntGame()));
+        tiles.add(new SpecialTile(27, "SpecialTile.png", new MemoryGame()));
+        tiles.add(new SpecialTile(29, "SpecialTile.png", new TreasureHuntGame()));
+        tiles.add(new SpecialTile(32, "SpecialTile.png", new TreasureHuntGame()));
+        tiles.add(new SpecialTile(33, "SpecialTile.png",  new TreasureHuntGame()));
+        tiles.add(new SpecialTile(34, "SpecialTile.png", new TreasureHuntGame()));
+        tiles.add(new SpecialTile(35, "SpecialTile.png", new TreasureHuntGame()));
+        tiles.add(new SpecialTile(36, "SpecialTile.png", new TreasureHuntGame()));
+        tiles.add(new SpecialTile(37, "SpecialTile.png", new TreasureHuntGame()));
 
         tiles.add(new FirstTube(19, "FirstTube.png")); //FirstTube
         tiles.add(new Jail(13, "Jail.png")); //Jail

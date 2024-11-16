@@ -30,21 +30,21 @@ public class GuessTheCharacterGame extends JFrame implements Game {
 
 
         Map<String, String> imageMap = new HashMap<>();
-        imageMap.put("C:\\Users\\natal\\Desktop\\sage\\MarioPoorty\\main\\src\\main\\java\\utils\\Character1.jpg", "yoshi");
-        imageMap.put("C:\\Users\\natal\\Desktop\\sage\\MarioPoorty\\main\\src\\main\\java\\utils\\Character2.jpg", "toad");
-        imageMap.put("C:\\Users\\natal\\Desktop\\sage\\MarioPoorty\\main\\src\\main\\java\\utils\\Character3.jpg", "mario");
-        imageMap.put("C:\\Users\\natal\\Desktop\\sage\\MarioPoorty\\main\\src\\main\\java\\utils\\Character4.jpg", "luigi");
-        imageMap.put("C:\\Users\\natal\\Desktop\\sage\\MarioPoorty\\main\\src\\main\\java\\utils\\Character5.jpg", "princesa peach");
-        imageMap.put("C:\\Users\\natal\\Desktop\\sage\\MarioPoorty\\main\\src\\main\\java\\utils\\Character6.jpg", "bowser");
-        imageMap.put("C:\\Users\\natal\\Desktop\\sage\\MarioPoorty\\main\\src\\main\\java\\utils\\Character7.jpg", "wario");
-        imageMap.put("C:\\Users\\natal\\Desktop\\sage\\MarioPoorty\\main\\src\\main\\java\\utils\\Character8.jpg", "donkey kong");
-        imageMap.put("C:\\Users\\natal\\Desktop\\sage\\MarioPoorty\\main\\src\\main\\java\\utils\\Character9.jpg", "princesa daisy");
-        imageMap.put("C:\\Users\\natal\\Desktop\\sage\\MarioPoorty\\main\\src\\main\\java\\utils\\Character10.jpg", "blooper");
-        imageMap.put("C:\\Users\\natal\\Desktop\\sage\\MarioPoorty\\main\\src\\main\\java\\utils\\Character11.png", "waluigi");
-        imageMap.put("C:\\Users\\natal\\Desktop\\sage\\MarioPoorty\\main\\src\\main\\java\\utils\\Character12.jpg", "koopa troopa");
-        imageMap.put("C:\\Users\\natal\\Desktop\\sage\\MarioPoorty\\main\\src\\main\\java\\utils\\Character13.jpg", "goomba");
-        imageMap.put("C:\\Users\\natal\\Desktop\\sage\\MarioPoorty\\main\\src\\main\\java\\utils\\Character14.jpg", "shy guy");
-        imageMap.put("C:\\Users\\natal\\Desktop\\sage\\MarioPoorty\\main\\src\\main\\java\\utils\\Character15.jpg", "bob omb");
+        imageMap.put("C:\\Users\\adbyb\\OneDrive\\Documentos\\GitHub\\MarioPoorty\\main\\src\\main\\java\\utils\\Character1.jpg", "yoshi");
+        imageMap.put("C:\\Users\\adbyb\\OneDrive\\Documentos\\GitHub\\MarioPoorty\\main\\src\\main\\java\\utils\\Character2.jpg", "toad");
+        imageMap.put("C:\\Users\\adbyb\\OneDrive\\Documentos\\GitHub\\MarioPoorty\\main\\src\\main\\java\\utils\\Character3.jpg", "mario");
+        imageMap.put("C:\\Users\\adbyb\\OneDrive\\Documentos\\GitHub\\MarioPoorty\\main\\src\\main\\java\\utils\\Character4.jpg", "luigi");
+        imageMap.put("C:\\Users\\adbyb\\OneDrive\\Documentos\\GitHub\\MarioPoorty\\main\\src\\main\\java\\utils\\Character5.jpg", "princesa peach");
+        imageMap.put("C:\\Users\\adbyb\\OneDrive\\Documentos\\GitHub\\MarioPoorty\\main\\src\\main\\java\\utils\\Character6.jpg", "bowser");
+        imageMap.put("C:\\Users\\adbyb\\OneDrive\\Documentos\\GitHub\\MarioPoorty\\main\\src\\main\\java\\utils\\Character7.jpg", "wario");
+        imageMap.put("C:\\Users\\adbyb\\OneDrive\\Documentos\\GitHub\\MarioPoorty\\main\\src\\main\\java\\utils\\Character8.jpg", "donkey kong");
+        imageMap.put("C:\\Users\\adbyb\\OneDrive\\Documentos\\GitHub\\MarioPoorty\\main\\src\\main\\java\\utils\\Character9.jpg", "princesa daisy");
+        imageMap.put("C:\\Users\\adbyb\\OneDrive\\Documentos\\GitHub\\MarioPoorty\\main\\src\\main\\java\\utils\\Character10.jpg", "blooper");
+        imageMap.put("C:\\Users\\adbyb\\OneDrive\\Documentos\\GitHub\\MarioPoorty\\main\\src\\main\\java\\utils\\Character11.png", "waluigi");
+        imageMap.put("C:\\Users\\adbyb\\OneDrive\\Documentos\\GitHub\\MarioPoorty\\main\\src\\main\\java\\utils\\Character12.jpg", "koopa troopa");
+        imageMap.put("C:\\Users\\adbyb\\OneDrive\\Documentos\\GitHub\\MarioPoorty\\main\\src\\main\\java\\utils\\Character13.jpg", "goomba");
+        imageMap.put("C:\\Users\\adbyb\\OneDrive\\Documentos\\GitHub\\MarioPoorty\\main\\src\\main\\java\\utils\\Character14.jpg", "shy guy");
+        imageMap.put("C:\\Users\\adbyb\\OneDrive\\Documentos\\GitHub\\MarioPoorty\\main\\src\\main\\java\\utils\\Character15.jpg", "bob omb");
 
         String[] imagePaths = imageMap.keySet().toArray(new String[0]);
         String selectedImagePath = imagePaths[random.nextInt(imagePaths.length)];

@@ -6,19 +6,24 @@ import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class MemoryGame extends JFrame {
+import static java.lang.Thread.sleep;
+
+public class MemoryGame extends JFrame implements Game{
     private final int rows = 3;
     private final int cols = 6;
     private final int buttonSize = 100;
     private JButton[][] buttons;
     private Icon[] images;
-    private Icon hiddenIcon = resizeIcon(new ImageIcon("C:\\Users\\adbyb\\OneDrive\\Documentos\\GitHub\\MarioPoorty\\main\\src\\main\\java\\utils\\secret.png"), buttonSize, buttonSize);
+    private Icon hiddenIcon = resizeIcon(new ImageIcon("C:\\Users\\natal\\Desktop\\sage\\MarioPoorty\\main\\src\\main\\java\\utils\\secret.png"), buttonSize, buttonSize);
     private boolean[][] matched;
     private JButton firstButton = null;
     private JButton secondButton = null;
     private int player1Score = 0;
     private int player2Score = 0;
     private boolean player1Turn = true;
+    private String p1;
+    private String p2;
+    private String winner;
 
     public MemoryGame() {
         setTitle("Juego de Memoria");
@@ -31,7 +36,6 @@ public class MemoryGame extends JFrame {
         images = loadImages();
         initializeButtons();
 
-        setVisible(true);
     }
 
 
@@ -114,15 +118,27 @@ public class MemoryGame extends JFrame {
 
                 if (player1Turn) {
                     player1Score++;
+
                 } else {
                     player2Score++;
+
                 }
             } else {
 
                 firstButton.setIcon(hiddenIcon);
                 secondButton.setIcon(hiddenIcon);
                 player1Turn = !player1Turn;
+
+                setVisible(false);
+                try {
+                    sleep(100);
+                } catch (InterruptedException ex) {
+                    throw new RuntimeException(ex);
+                }
+                setVisible(true);
             }
+
+
 
             firstButton = null;
             secondButton = null;
@@ -147,15 +163,22 @@ public class MemoryGame extends JFrame {
         if (allMatched) {
             String winnerMessage;
             if (player1Score > player2Score) {
-                winnerMessage = "¡Jugador 1 gana con " + player1Score + " pares!";
+                winnerMessage = p1 +" gana con " + player1Score + " pares!";
+                winner = p1;
             } else if (player2Score > player1Score) {
-                winnerMessage = "¡Jugador 2 gana con " + player2Score + " pares!";
+                winnerMessage = p2+ " gana con " + player2Score + " pares!";
+                winner = p2;
             } else {
-                winnerMessage = "¡Empate con " + player1Score + " pares cada uno!";
+                winnerMessage = "Â¡Empate con " + player1Score + " pares cada uno!";
+                winner = "no hay ganador";
             }
-
             JOptionPane.showMessageDialog(this, winnerMessage);
-            resetGame();
+
+            Timer timer = new Timer(9000, e -> dispose());  // Espera 2 segundos antes de cerrar
+            timer.setRepeats(false);
+            timer.start();
+
+
         }
     }
 
@@ -177,7 +200,25 @@ public class MemoryGame extends JFrame {
         }
     }
 
-    public static void main(String[] args) {
-        new MemoryGame();
+
+    public String playMemory(String p1, String p2){
+        MemoryGame memoryGame= new MemoryGame();
+        memoryGame.resetGame();
+        memoryGame.p1 = p1;
+        memoryGame.p2 = p2;
+        memoryGame.setVisible(true);
+        while (memoryGame.winner == null) {
+            try {
+                sleep(100);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+
+        memoryGame.dispose();
+
+
+        return memoryGame.winner;
     }
 }

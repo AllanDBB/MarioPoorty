@@ -34,8 +34,8 @@ public class TreasureHuntGame extends JFrame implements Game {
 
     private void initializeIcons() {
       
-        explosionIcon = resizeIcon(new ImageIcon("C:\\Users\\natal\\Desktop\\sage\\MarioPoorty\\main\\src\\main\\java\\utils\\explosion.png"), 50, 50);
-        treasureIcon = resizeIcon(new ImageIcon("C:\\Users\\natal\\Desktop\\sage\\MarioPoorty\\main\\src\\main\\java\\utils\\coin.png"), 50, 50);
+        explosionIcon = resizeIcon(new ImageIcon("C:\\Users\\adbyb\\OneDrive\\Documentos\\GitHub\\MarioPoorty\\main\\src\\main\\java\\utils\\explosion.png"), 50, 50);
+        treasureIcon = resizeIcon(new ImageIcon("C:\\Users\\adbyb\\OneDrive\\Documentos\\GitHub\\MarioPoorty\\main\\src\\main\\java\\utils\\coin.png"), 50, 50);
     }
 
     private ImageIcon resizeIcon(ImageIcon icon, int width, int height) {

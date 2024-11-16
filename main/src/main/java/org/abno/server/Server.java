@@ -17,6 +17,7 @@ import org.abno.games.Game;
 import org.abno.games.JuegoCartas;
 import org.abno.players.PlayerData;
 import org.abno.players.Token;
+import org.abno.games.MemoryGame;
 import org.abno.players.Dices;
 import org.abno.players.randomNumber;
 import org.abno.board.Board;
@@ -324,7 +325,9 @@ public class Server {
                     gameEnded = true;
 
                     sendToAll("FIN YA GANARON");
+                    sendToAll("ESOOOOOOO WUUUUUU WUUUUUUUUUU");
                     gameStarted = false;
+                    socket.close();
                     return;
                 } else{
                     handleMove(playerId, total);
@@ -412,16 +415,48 @@ public class Server {
                                     ClientHandler.sendToClient(p, "THE WINNNEEEER IS: "+ winner);
                                 }
 
-                                if (winner == playerId){
+                                if (winner.equals(playerId)){
                                     clientData.get(playerId).setInteractWin(true);
                                 } else{
                                     clientData.get(playerId).setInteractWin(false);
                                 }
 
-                            }
+                            } else if(game instanceof TicTacToe){
+                                List<String> playerNames = new ArrayList<>(clientData.keySet());
 
-                            else{
-                                t.interact(data);}
+                                String p = playerNames.getFirst();
+                                if (p == playerId){
+                                    p = playerNames.getLast();
+                                }
+
+                                String ans = ((TicTacToe) game).playy(playerId, p);
+
+                                clientData.get(playerId).setInteractWin(Objects.equals(ans, playerId));
+
+                            } else if (game instanceof MemoryGame){
+                                List<String> playerNames = new ArrayList<>(clientData.keySet());
+
+                                String p = playerNames.getFirst();
+                                if (p == playerId){
+                                    p = playerNames.getLast();
+                                }
+
+                                String ans = ((MemoryGame) game).playMemory(playerId, p);
+                                System.out.println(ans);
+
+                                clientData.get(playerId).setInteractWin(Objects.equals(ans, playerId));
+                                System.out.println(clientData.get(playerId).isInteractWin());
+
+                            }else{
+                                t.interact(data);
+
+                                SpecialTile g = (SpecialTile) board.getTiles().get(data.getToken().getTile().getId());
+                                if (g.getGame().won()){
+                                    data.setInteractWin(true);
+                                } else{
+                                    data.setInteractWin(false);
+                                }
+                            }
                         }
 
 
