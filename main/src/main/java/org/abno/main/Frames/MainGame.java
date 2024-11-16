@@ -3,18 +3,22 @@ package org.abno.main.Frames;
 import javax.swing.*;
 import java.awt.*;
 import java.nio.file.Paths;
+import java.util.List;
+
+import org.abno.board.Tile;
 import org.abno.players.Token;
 import org.abno.server.Client;
 import org.abno.server.Server;
 import org.abno.players.Dices;
+import org.abno.board.Board;
 
 public class MainGame extends JFrame {
 
     private static final Dimension SCREEN_SIZE = new Dimension(1366, 768);
     private static final Color BACKGROUND_COLOR = new Color(45, 21, 92);
     private static final Color TEXT_COLOR = Color.WHITE;
-    private static final Dimension IMAGE_SIZE = new Dimension(150, 150); // Smaller image size
-
+    private static final Dimension IMAGE_SIZE = new Dimension(150, 150);
+    private static Board Boardlist;
     // Add Dice panel
     private Dice dicePanel;
 
@@ -39,17 +43,23 @@ public class MainGame extends JFrame {
         leftPanel.setBackground(BACKGROUND_COLOR);
         contentPanel.add(leftPanel, BorderLayout.WEST);
 
+        // Set preferred, minimum, and maximum size for left panel
+        Dimension leftPanelDimension = new Dimension(300, SCREEN_SIZE.height);
+        leftPanel.setPreferredSize(leftPanelDimension);
+        leftPanel.setMinimumSize(leftPanelDimension);
+        leftPanel.setMaximumSize(leftPanelDimension);
+
         // Create and add user info panel
         JPanel userInfoPanel = new JPanel();
         userInfoPanel.setLayout(new BoxLayout(userInfoPanel, BoxLayout.Y_AXIS));
         userInfoPanel.setBackground(BACKGROUND_COLOR);
         userInfoPanel.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
-        userInfoPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        userInfoPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel userLabel = new JLabel(selectedId + " (you)");
         userLabel.setForeground(TEXT_COLOR);
         userLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        userLabel.setFont(new Font("Monospaced", Font.BOLD, 18)); // Smaller font size
+        userLabel.setFont(new Font("Monospaced", Font.BOLD, 18));
         userLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         userInfoPanel.add(userLabel);
 
@@ -71,7 +81,7 @@ public class MainGame extends JFrame {
 
         // Create and add dice panel
         JPanel dicePanelContainer = new JPanel();
-        dicePanelContainer.setLayout(new BoxLayout(dicePanelContainer, BoxLayout.Y_AXIS));
+        dicePanelContainer.setLayout(new GridLayout(2, 1, 10, 10));
         dicePanelContainer.setBackground(BACKGROUND_COLOR);
 
         // Initialize dice panel with smaller image sizes
@@ -88,22 +98,21 @@ public class MainGame extends JFrame {
         dicePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         dicePanelContainer.add(dicePanel);
 
-        dicePanelContainer.add(Box.createRigidArea(new Dimension(0, 10)));
-
         // Add roll button
         JButton rollButton = new JButton("Roll Dice");
         rollButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        rollButton.setPreferredSize(new Dimension(100, 25)); // Smaller button size
+        rollButton.setPreferredSize(new Dimension(100, 30));
+        rollButton.setMaximumSize(new Dimension(100, 30));
         rollButton.addActionListener(e -> rollDice());
         dicePanelContainer.add(rollButton);
 
         leftPanel.add(dicePanelContainer);
 
-        // Create a label that says "Board"
-        JLabel boardLabel = new JLabel("Board", SwingConstants.CENTER);
-        boardLabel.setFont(new Font("Monospaced", Font.BOLD, 50));
-        boardLabel.setForeground(Color.BLACK);
-        contentPanel.add(boardLabel, BorderLayout.CENTER);
+        // Create and add the BoardComponent
+        Boardlist= Server.getBoard();
+        BoardComponent boardComponent = new BoardComponent(Boardlist);
+
+        contentPanel.add(boardComponent, BorderLayout.CENTER);
 
         // Optionally, add the chat component at the bottom
         if (chatComponent != null) {

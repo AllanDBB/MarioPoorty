@@ -8,7 +8,7 @@ public class Tile {
 
     public Tile(int id, String img) {
         this.id = id;
-        this.img = img;
+        this.img = "main/Assets/Tiles/" + img;
     }
 
     public int getId() {
@@ -23,6 +23,5 @@ public class Tile {
         return img;
     }
 
-    public void interact(PlayerData playerData){}
-
+    public void interact(PlayerData playerData) {}
 }

@@ -19,6 +19,7 @@ public class Board {
         this.maxTiles = 38;  // Al menos 38 casillas en el tablero
         this.random = new Random();
         fillBoard();
+
     }
 
     public void fillBoard() {
@@ -30,33 +31,32 @@ public class Board {
             tiles.add(new SpecialTile(id, imgRoute));
         }*/
 
-        tiles.add(new SpecialTile(0, "path/to/evil_tile_image_0.png", new JuegoCartas()));
-        tiles.add(new SpecialTile(1, "path/to/evil_tile_image_1.png", new JuegoCartas()));
+        tiles.add(new SpecialTile(0, "SpecialTile.png", new CatchTheCat()));
+        tiles.add(new SpecialTile(1, "SpecialTile.png", new CatchTheCat()));
 
-        tiles.add(new SpecialTile(2, "path/to/evil_tile_image_2.png", new CatchTheCat()));
-        tiles.add(new SpecialTile(3, "path/to/evil_tile_image_3.png", new CatchTheCat()));
+        tiles.add(new SpecialTile(2, "SpecialTile.png", new CatchTheCat()));
+        tiles.add(new SpecialTile(3, "SpecialTile.png", new CatchTheCat()));
 
-        tiles.add(new SpecialTile(4, "path/to/evil_tile_image_4.png", new CollectTheCoins()));
-        tiles.add(new SpecialTile(5, "path/to/evil_tile_image_5.png", new CollectTheCoins()));
+        tiles.add(new SpecialTile(4, "SpecialTile.png", new CatchTheCat()));
+        tiles.add(new SpecialTile(5, "SpecialTile.png", new CatchTheCat()));
 
-        tiles.add(new SpecialTile(6, "path/to/evil_tile_image_6.png", new GuessTheCharacterGame()));
-        tiles.add(new SpecialTile(7, "path/to/evil_tile_image_7.png", new GuessTheCharacterGame()));
+        tiles.add(new SpecialTile(6,  "SpecialTile.png", new CatchTheCat()));
+        tiles.add(new SpecialTile(7, "SpecialTile.png", new CatchTheCat()));
 
-        tiles.add(new SpecialTile(8, "path/to/evil_tile_image_8.png", new LetterSoup()));
-        tiles.add(new SpecialTile(9, "path/to/evil_tile_image_9.png", new LetterSoup()));
+        tiles.add(new SpecialTile(8, "SpecialTile.png", new CatchTheCat()));
+        tiles.add(new SpecialTile(9, "SpecialTile.png", new CatchTheCat()));
 
-        tiles.add(new SpecialTile(10, "path/to/evil_tile_image_10.png", new MemoryPath()));
-        tiles.add(new SpecialTile(11, "path/to/evil_tile_image_11.png", new MemoryPath()));
+        tiles.add(new SpecialTile(10, "SpecialTile.png", new CatchTheCat()));
+        tiles.add(new SpecialTile(11, "SpecialTile.png", new CatchTheCat()));
 
         //estas son las de sockets pero mientras tanto
-        tiles.add(new SpecialTile(12, "path/to/evil_tile_image_12.png", new TreasureHuntGame()));
-        tiles.add(new SpecialTile(13, "path/to/evil_tile_image_13.png", new TreasureHuntGame()));
-
-        tiles.add(new SpecialTile(14, "path/to/evil_tile_image_14.png", new LetterSoup()));
-        tiles.add(new SpecialTile(15, "path/to/evil_tile_image_15.png", new LetterSoup()));
-        tiles.add(new SpecialTile(16, "path/to/evil_tile_image_16.png", new GuessTheCharacterGame()));
-        tiles.add(new SpecialTile(17, "path/to/evil_tile_image_17.png", new GuessTheCharacterGame()));
-        tiles.add(new SpecialTile(18, "path/to/evil_tile_image_18.png", new JuegoCartas()));
+        tiles.add(new SpecialTile(12, "SpecialTile.png", new CatchTheCat()));
+        tiles.add(new SpecialTile(13, "SpecialTile.png", new CatchTheCat()));
+        tiles.add(new SpecialTile(14, "SpecialTile.png", new CatchTheCat()));
+        tiles.add(new SpecialTile(15, "SpecialTile.png", new CatchTheCat()));
+        tiles.add(new SpecialTile(16, "SpecialTile.png", new CatchTheCat()));
+        tiles.add(new SpecialTile(17, "SpecialTile.png", new CatchTheCat()));
+        tiles.add(new SpecialTile(18, "SpecialTile.png", new CatchTheCat()));
 
         /*for (int i = 0; i < 10; i++) {
             int id = i + 19;
@@ -64,21 +64,21 @@ public class Board {
             tiles.add(new EvilTile(id, imgRoute));
         }*/
 
-        tiles.add(new FirstTube(19, "path/to/evil_tile_image_19.png")); //FirstTube
-        tiles.add(new Jail(20, "path/to/evil_tile_image_20.png")); //Jail
-        tiles.add(new IceFlower(21, "path/to/evil_tile_image_21.png")); //IceFlower
-        tiles.add(new FireFlower(22, "path/to/evil_tile_image_22.png")); //FireFlower
-        tiles.add(new Star(23, "path/to/evil_tile_image_23.png")); //Star
-        tiles.add(new Tail(24, "path/to/evil_tile_image_24.png")); //Tail
-        tiles.add(new Jail(25, "path/to/evil_tile_image_25.png")); //Jail
-        tiles.add(new SecondTube(26, "path/to/evil_tile_image_26.png")); //SecondTube
-        tiles.add(new Star(27, "path/to/evil_tile_image_27.png")); //Star
-        tiles.add(new ThirdTube(28, "path/to/evil_tile_image_28.png")); //ThirdTube
+        tiles.add(new FirstTube(19, "FirstTube.png")); //FirstTube
+        tiles.add(new Jail(20, "Jail.png")); //Jail
+        tiles.add(new IceFlower(21, "IceFlower.png")); //IceFlower
+        tiles.add(new FireFlower(22, "FireFlower.png")); //FireFlower
+        tiles.add(new Star(23, "Star.png")); //Star
+        tiles.add(new Tail(24, "Tail.png")); //Tail
+        tiles.add(new Jail(25, "Jail.png")); //Jail
+        tiles.add(new SecondTube(26, "SecondTube.png")); //SecondTube
+        tiles.add(new Star(27, "Star.png")); //Star
+        tiles.add(new ThirdTube(28, "ThirdTube.png")); //ThirdTube
 
 
         for (int i = 0; i < (maxTiles - 18 - 10); i++) {
             int id = i + 29;  // Continuamos el conteo desde 29
-            String imgRoute = "path/to/normal_tile_image_" + id + ".png";
+            String imgRoute = "NormalTile.png";
             tiles.add(new Tile(id, imgRoute));
         }
 

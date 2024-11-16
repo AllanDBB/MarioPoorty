@@ -30,7 +30,6 @@ public class Server {
     private static final int MAX_PLAYERS = 6;
     private static Map<String, PlayerData> clientData = new HashMap<>();
     private static int activePlayers = 0;
-
     private static JuegoCartas juegoCartas;
 
     // Tokens
@@ -71,7 +70,9 @@ public class Server {
     private static Board board = new Board();
     private static boolean gameEnded = false;
 
-
+    public static Board getBoard(){
+        return board;
+    }
     public static void main(String[] args) {
         System.out.println("Server starting...");
 
