@@ -291,7 +291,7 @@ public class Server {
                 PlayerData data = clientData.get(clientId);
                 if (data.getLostTurns() > 0){
                     data.setLostTurns(data.getLostTurns()-1);
-                    sendToClient(playerId, String.valueOf(data.getLostTurns())+" turnos restantes sin jugar");
+                    sendToClient(playerId, String.valueOf(data.getLostTurns())+" remaning turns without play.");
                     endTurn();
                     return;
                 }
@@ -320,12 +320,7 @@ public class Server {
 
                 Server.sendToAll(rollMessage);
 
-                if (clientData.get(playerId).getToken().getTile().getId()+total > 38){
-                    int dif = clientData.get(playerId).getToken().getTile().getId()+total -38;
-                    clientData.get(playerId).getToken().setTile(board.getTiles().get(38-dif));
-                }
-
-                if (clientData.get(playerId).getToken().getTile().getId()+total == 38){
+                if (clientData.get(playerId).getToken().getTile().getId()+total >= 38){
                     gameEnded = true;
 
                     sendToAll("FIN YA GANARON");
@@ -333,7 +328,7 @@ public class Server {
                     return;
                 } else{
                     handleMove(playerId, total);
-                    sendToClient(playerId, String.valueOf(data.getToken().getTile().getId())+" es el cuadro actual ");
+                    sendToClient(playerId, String.valueOf(data.getToken().getTile().getId())+" is your current position ");
 
                     if (data.isRollDiceAgain()){
                         data.setRollDiceAgain(false);
@@ -377,27 +372,31 @@ public class Server {
 
             for (Tile t : board.getTiles()){
                 if (t.getId() == clientData.get(playerId).getToken().getTile().getId()){
-                    if (clientData.get(playerId).getToken().getTile().getClass() == IceFlower.class || clientData.get(playerId).getToken().getTile().getClass() == FireFlower.class){
-                        out.println("Escoja a quien atacar");
-                        out.println(playersQueue.toArray().toString());
+                    System.out.println(t.getClass().getSimpleName());
+
+                    if (clientData.get(playerId).getToken().getTile().getClass().getSimpleName().equals("FireFlower") || clientData.get(playerId).getToken().getTile().getClass().getSimpleName().equals("IceFlower")){
+                        out.println("Choose who you want to attack: ");
+
+                        for (String player : playersQueue.toArray(new String[0])) {
+                            if (!player.equals(playerId))
+                                out.println(player);
+                        }
                         String p = in.readLine();
                         for (String player: playersQueue){
                             out.println(player);
                             out.println(p);
                             if (Objects.equals(p, player)){
-                                out.println("encontrado");
+                                out.println("Founded!");
                                 t.interact(clientData.get(player));
                                 out.println(clientData.get(player).getToken().getTile().getId());
                                 break;
                             }                        }
                     } else if (clientData.get(playerId).getToken().getTile().getClass() == Tail.class){
-                        out.println("Escoja cuánto moverse (-3 a +3)");
+                        out.println("Choose how many move (-3 to +3)");
                         String p = in.readLine();
                         ((Tail) t).jump(clientData.get(playerId), Integer.parseInt(p));
                     }
                     else{
-                    out.println("Entraste a una casilla WUJUU! " + t.getClass());
-
                         if (board.getTiles().get(data.getToken().getTile().getId()).getClass() == SpecialTile.class){
                             SpecialTile specialTile = (SpecialTile) board.getTiles().get(data.getToken().getTile().getId());
                             Game game = specialTile.getGame();
@@ -410,7 +409,7 @@ public class Server {
                                 String winner = g.playCards(playerNames);
 
                                 for (String p : playersQueue) {
-                                    ClientHandler.sendToClient(p, "Ganador: "+ winner);
+                                    ClientHandler.sendToClient(p, "THE WINNNEEEER IS: "+ winner);
                                 }
 
                                 if (winner == playerId){
@@ -445,7 +444,7 @@ public class Server {
         private void endTurn() {
             // Cambiar al siguiente turno
             Server.currentPlayerIndex = (Server.currentPlayerIndex + 1) % Server.playersQueue.size();
-            Server.sendToAll("Turn has ended. Next player's turn.");
+            Server.sendToAll("Turn has ended. Next player's turn. (" + playersQueue.get(Server.currentPlayerIndex) + ")");
         }
 
     }
