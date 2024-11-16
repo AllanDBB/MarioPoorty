@@ -49,7 +49,6 @@ public class Board {
         tiles.add(new SpecialTile(35, "SpecialTile.png", new CatchTheCat()));
         tiles.add(new SpecialTile(36, "SpecialTile.png", new CatchTheCat()));
         tiles.add(new SpecialTile(37, "SpecialTile.png", new CatchTheCat()));
-        tiles.add(new SpecialTile(35, "SpecialTile.png", new CatchTheCat()));
 
         tiles.add(new FirstTube(19, "FirstTube.png")); //FirstTube
         tiles.add(new Jail(13, "Jail.png")); //Jail

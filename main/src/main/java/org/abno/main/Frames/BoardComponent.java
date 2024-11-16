@@ -28,20 +28,32 @@ public class BoardComponent extends JPanel {
     private void initializeBoard(List<Tile> tiles) {
         removeAll(); // Clear previous cells if any
 
-        for (Tile tile : tiles) {
-            // Load and resize the image
-            ImageIcon tileIcon = resizeImageIcon(tile.getImg(), TILE_WIDTH, TILE_HEIGHT);
+        if (tiles.size() != ROWS * COLUMNS) {
+            System.err.println("Mismatch between number of tiles and grid dimensions");
+        }
 
-            // Create a label for each tile with the resized image icon
-            JLabel tileLabel = new JLabel(tileIcon);
-            tileLabel.setHorizontalAlignment(JLabel.CENTER);
-            tileLabel.setVerticalAlignment(JLabel.CENTER);
+        for (int i = 0; i < ROWS * COLUMNS; i++) {
+            if (i < tiles.size()) {
+                Tile tile = tiles.get(i);
+                // Load and resize the image
+                ImageIcon tileIcon = resizeImageIcon(tile.getImg(), TILE_WIDTH, TILE_HEIGHT);
+                System.out.println(tile.getId());
 
-            // Set a border for each tile if needed
-            tileLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                // Create a label for each tile with the resized image icon
+                JLabel tileLabel = new JLabel(tileIcon);
+                tileLabel.setHorizontalAlignment(JLabel.CENTER);
+                tileLabel.setVerticalAlignment(JLabel.CENTER);
 
-            // Add the label to the panel
-            add(tileLabel);
+                // Set a border for each tile if needed
+                tileLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+                // Add the label to the panel
+                add(tileLabel);
+            } else {
+                // Add an empty label if there are not enough tiles
+                JLabel emptyLabel = new JLabel();
+                add(emptyLabel);
+            }
         }
 
         // Refresh the panel to display the new components
